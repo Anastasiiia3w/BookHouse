@@ -1,0 +1,807 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Підтвердження замовлення</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #302a23;
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(195, 154, 101, 0.22),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    135deg,
+                    #f8f4ed 0%,
+                    #eee4d6 100%
+                );
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .confirm-page {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 42px 0 70px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            color: #745d43;
+            font-size: 15px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #35291d;
+            transform: translateX(-4px);
+        }
+
+        .confirm-header {
+            margin-bottom: 30px;
+        }
+
+        .confirm-header h1 {
+            margin: 0 0 10px;
+            color: #34281c;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(36px, 5vw, 54px);
+        }
+
+        .confirm-header p {
+            max-width: 720px;
+            margin: 0;
+            color: #7b6d5e;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .checkout-steps {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #998a79;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e3d8ca;
+        }
+
+        .step-completed {
+            color: #4e6847;
+        }
+
+        .step-completed .step-number {
+            color: #fff;
+            background: #6f8a67;
+        }
+
+        .step-active {
+            color: #583f27;
+        }
+
+        .step-active .step-number {
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #936a3f,
+                #513820
+            );
+            box-shadow: 0 7px 16px rgba(81, 56, 32, 0.24);
+        }
+
+        .step-line {
+            width: 48px;
+            height: 2px;
+            background: #ded3c5;
+        }
+
+        .step-line-completed {
+            background: #91a88a;
+        }
+
+        .confirm-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(330px, 0.75fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .confirm-column {
+            display: grid;
+            gap: 24px;
+        }
+
+        .confirm-card {
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(100, 75, 45, 0.12);
+            border-radius: 24px;
+            box-shadow: 0 20px 55px rgba(63, 45, 27, 0.11);
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .heading-left {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .card-icon {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            background: #f0e3d0;
+            border-radius: 14px;
+            font-size: 22px;
+        }
+
+        .card-heading h2 {
+            margin: 0 0 4px;
+            color: #3e3022;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 25px;
+        }
+
+        .card-heading p {
+            margin: 0;
+            color: #948473;
+            font-size: 13px;
+        }
+
+        .edit-link {
+            padding: 8px 12px;
+            color: #725332;
+            background: #f3e8d8;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            transition: 0.2s;
+        }
+
+        .edit-link:hover {
+            background: #eadac5;
+        }
+
+        .info-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding-bottom: 13px;
+            border-bottom: 1px solid #eee5da;
+            color: #817261;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-row:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-row strong {
+            max-width: 62%;
+            color: #45392d;
+            text-align: right;
+        }
+
+        .payment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            color: #59432d;
+            background: #f4eadb;
+            border: 1px solid #e7d8c3;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .order-products {
+            display: grid;
+            gap: 16px;
+        }
+
+        .order-product {
+            display: grid;
+            grid-template-columns: 72px 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee5da;
+        }
+
+        .order-product:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .product-image,
+        .product-image-placeholder {
+            width: 72px;
+            height: 90px;
+            background: #eee5d9;
+            border-radius: 11px;
+        }
+
+        .product-image {
+            object-fit: cover;
+        }
+
+        .product-image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .product-name {
+            display: block;
+            margin-bottom: 7px;
+            color: #43372c;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .product-meta {
+            color: #938271;
+            font-size: 13px;
+        }
+
+        .product-total {
+            color: #62472c;
+            font-size: 16px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .order-summary {
+            position: sticky;
+            top: 25px;
+        }
+
+        .summary-title {
+            margin: 0 0 22px;
+            color: #3b2e21;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 28px;
+        }
+
+        .summary-totals {
+            display: grid;
+            gap: 13px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            color: #7c6d5d;
+            font-size: 14px;
+        }
+
+        .summary-row strong {
+            color: #45372a;
+            text-align: right;
+        }
+
+        .discount-row strong {
+            color: #3d7a49;
+        }
+
+        .summary-total {
+            margin-top: 5px;
+            padding-top: 17px;
+            color: #3b2a1b;
+            border-top: 1px dashed #d7c8b6;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .summary-total strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 28px;
+        }
+
+        .confirm-note {
+            display: flex;
+            gap: 11px;
+            margin-top: 22px;
+            padding: 16px;
+            color: #665746;
+            background: #f8f2e9;
+            border: 1px solid #ebe0d2;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .confirm-form {
+            margin-top: 22px;
+        }
+
+        .confirm-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 56px;
+            padding: 0 24px;
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #8c643b,
+                #49331f
+            );
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 14px 28px rgba(73, 51, 31, 0.26);
+            transition: 0.2s;
+        }
+
+        .confirm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 32px rgba(73, 51, 31, 0.31);
+        }
+
+        .confirm-button:active {
+            transform: translateY(0);
+        }
+
+        .secure-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-top: 13px;
+            color: #90806f;
+            font-size: 12px;
+        }
+
+        .warning-message {
+            padding: 15px 17px;
+            color: #934034;
+            background: #fff0ed;
+            border: 1px solid #f0c7bf;
+            border-radius: 13px;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 900px) {
+            .confirm-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .confirm-page {
+                width: min(100% - 20px, 1180px);
+                padding-top: 25px;
+            }
+
+            .confirm-card {
+                padding: 22px 18px;
+                border-radius: 19px;
+            }
+
+            .card-heading {
+                align-items: flex-start;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-row strong {
+                max-width: 100%;
+                text-align: left;
+            }
+
+            .order-product {
+                grid-template-columns: 60px 1fr;
+            }
+
+            .product-image,
+            .product-image-placeholder {
+                width: 60px;
+                height: 76px;
+            }
+
+            .product-total {
+                grid-column: 2;
+            }
+
+            .checkout-steps {
+                gap: 7px;
+            }
+
+            .step-line {
+                width: 22px;
+            }
+
+            .step span:last-child {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="confirm-page">
+
+    <a
+        href="{% url 'checkout:checkout_payment' %}"
+        class="back-link"
+    >
+        ← Повернутися до способу оплати
+    </a>
+
+    <header class="confirm-header">
+        <h1>Підтвердження замовлення</h1>
+
+        <p>
+            Перевірте товари, контактні дані, адресу доставки
+            та спосіб оплати перед остаточним оформленням.
+        </p>
+
+        <div class="checkout-steps">
+            <div class="step step-completed">
+                <span class="step-number">✓</span>
+                <span>Адреса</span>
+            </div>
+
+            <div class="step-line step-line-completed"></div>
+
+            <div class="step step-completed">
+                <span class="step-number">✓</span>
+                <span>Оплата</span>
+            </div>
+
+            <div class="step-line step-line-completed"></div>
+
+            <div class="step step-active">
+                <span class="step-number">3</span>
+                <span>Підтвердження</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="confirm-layout">
+
+        <div class="confirm-column">
+
+            <section class="confirm-card">
+                <div class="card-heading">
+
+                    <div class="heading-left">
+                        <div class="card-icon">🚚</div>
+
+                        <div>
+                            <h2>Доставка</h2>
+                            <p>Контактні дані та адреса</p>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{% url 'checkout:checkout' %}"
+                        class="edit-link"
+                    >
+                        Змінити
+                    </a>
+                </div>
+
+                <div class="info-list">
+                    <div class="info-row">
+                        <span>Отримувач</span>
+
+                        <strong>
+                            {{ checkout_address.recipient_name }}
+                        </strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Email</span>
+
+                        <strong>
+                            {{ checkout_address.recipient_email }}
+                        </strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Телефон</span>
+
+                        <strong>
+                            {{ checkout_address.phone }}
+                        </strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Місто</span>
+
+                        <strong>
+                            {{ checkout_address.city }}
+                        </strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Адреса</span>
+
+                        <strong>
+                            {{ checkout_address.address_line }}
+                        </strong>
+                    </div>
+
+                    {% if checkout_address.postal_code %}
+                        <div class="info-row">
+                            <span>Поштовий індекс</span>
+
+                            <strong>
+                                {{ checkout_address.postal_code }}
+                            </strong>
+                        </div>
+                    {% endif %}
+
+                    {% if checkout_address.comment %}
+                        <div class="info-row">
+                            <span>Коментар</span>
+
+                            <strong>
+                                {{ checkout_address.comment }}
+                            </strong>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="confirm-card">
+                <div class="card-heading">
+
+                    <div class="heading-left">
+                        <div class="card-icon">💳</div>
+
+                        <div>
+                            <h2>Спосіб оплати</h2>
+                            <p>Обраний варіант оплати</p>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{% url 'checkout:checkout_payment' %}"
+                        class="edit-link"
+                    >
+                        Змінити
+                    </a>
+                </div>
+
+                <div class="payment-badge">
+                    {% if payment_method == 'card' %}
+                        <span>💳</span>
+                        Оплата карткою онлайн
+
+                    {% elif payment_method == 'cash' %}
+                        <span>💵</span>
+                        Готівкою при отриманні
+
+                    {% elif payment_method == 'cod' %}
+                        <span>📦</span>
+                        Післяплата
+
+                    {% elif payment_method == 'bank_transfer' %}
+                        <span>🏦</span>
+                        Банківський переказ
+
+                    {% else %}
+                        <span>💰</span>
+                        {{ payment_method }}
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="confirm-card">
+                <div class="card-heading">
+
+                    <div class="heading-left">
+                        <div class="card-icon">📚</div>
+
+                        <div>
+                            <h2>Товари</h2>
+                            <p>
+                                {{ cart_items|length }} позицій у замовленні
+                            </p>
+                        </div>
+                    </div>
+
+                    <a
+                        href="{% url 'cart:detail' %}"
+                        class="edit-link"
+                    >
+                        Змінити
+                    </a>
+                </div>
+
+                <div class="order-products">
+                    {% for item in cart_items %}
+                        <div class="order-product">
+
+                            {% if item.product.main_image %}
+                                <img
+                                    src="{{ item.product.main_image.url }}"
+                                    alt="{{ item.product.name }}"
+                                    class="product-image"
+                                >
+                            {% else %}
+                                <div class="product-image-placeholder">
+                                    📖
+                                </div>
+                            {% endif %}
+
+                            <div>
+                                <span class="product-name">
+                                    {{ item.product.name }}
+                                </span>
+
+                                <div class="product-meta">
+                                    {{ item.quantity }} ×
+                                    {{ item.product.price }} ₴
+                                </div>
+                            </div>
+
+                            <div class="product-total">
+                                {{ item.total_price }} ₴
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="warning-message">
+                            У кошику немає товарів.
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </div>
+
+        <aside class="confirm-card order-summary">
+
+            <h2 class="summary-title">
+                Підсумок
+            </h2>
+
+            <div class="summary-totals">
+                <div class="summary-row">
+                    <span>Сума товарів</span>
+                    <strong>{{ subtotal }} ₴</strong>
+                </div>
+
+                {% if discount_amount %}
+                    <div class="summary-row discount-row">
+                        <span>Знижка</span>
+
+                        <strong>
+                            − {{ discount_amount }} ₴
+                        </strong>
+                    </div>
+                {% endif %}
+
+                <div class="summary-row">
+                    <span>Доставка</span>
+                    <strong>Безкоштовно</strong>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span>До сплати</span>
+
+                    <strong>
+                        {% if total %}
+                            {{ total }} ₴
+                        {% else %}
+                            {{ subtotal }} ₴
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="confirm-note">
+                <span>📦</span>
+
+                <span>
+                    Після підтвердження буде створено замовлення,
+                    а кількість товарів на складі буде оновлена.
+                </span>
+            </div>
+
+            {% if cart_items %}
+        <form
+     method="post"
+    action="{% url 'checkout:checkout_confirm' %}"
+    class="confirm-form"
+>
+    {% csrf_token %}
+
+    <button type="submit" class="confirm-button">
+        Підтвердити замовлення
+    </button>
+</form>
+                <div class="secure-text">
+                    <span>🔒</span>
+                    Безпечне оформлення замовлення
+                </div>
+            {% endif %}
+
+        </aside>
+
+    </div>
+</main>
+</body>
+</html>
+```

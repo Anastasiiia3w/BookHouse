@@ -1,0 +1,822 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Спосіб оплати</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #302a23;
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(195, 154, 101, 0.22),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    135deg,
+                    #f8f4ed 0%,
+                    #eee4d6 100%
+                );
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        .payment-page {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 42px 0 70px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            color: #745d43;
+            font-size: 15px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #35291d;
+            transform: translateX(-4px);
+        }
+
+        .payment-header {
+            margin-bottom: 30px;
+        }
+
+        .payment-header h1 {
+            margin: 0 0 10px;
+            color: #34281c;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(36px, 5vw, 54px);
+        }
+
+        .payment-header p {
+            max-width: 680px;
+            margin: 0;
+            color: #7b6d5e;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .checkout-steps {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #998a79;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e3d8ca;
+        }
+
+        .step-completed {
+            color: #4e6847;
+        }
+
+        .step-completed .step-number {
+            color: #fff;
+            background: #6f8a67;
+        }
+
+        .step-active {
+            color: #583f27;
+        }
+
+        .step-active .step-number {
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #936a3f,
+                #513820
+            );
+            box-shadow: 0 7px 16px rgba(81, 56, 32, 0.24);
+        }
+
+        .step-line {
+            width: 48px;
+            height: 2px;
+            background: #ded3c5;
+        }
+
+        .step-line-completed {
+            background: #91a88a;
+        }
+
+        .payment-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(330px, 0.75fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .payment-card {
+            padding: 34px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(100, 75, 45, 0.12);
+            border-radius: 25px;
+            box-shadow: 0 20px 55px rgba(63, 45, 27, 0.12);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 27px;
+        }
+
+        .section-icon {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: #f0e3d0;
+            font-size: 24px;
+        }
+
+        .section-heading h2 {
+            margin: 0 0 5px;
+            color: #3e3022;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 28px;
+        }
+
+        .section-heading p {
+            margin: 0;
+            color: #948473;
+            font-size: 14px;
+        }
+
+        .payment-form {
+            display: grid;
+            gap: 18px;
+        }
+
+        .payment-options {
+            display: grid;
+            gap: 14px;
+        }
+
+        .payment-option {
+            position: relative;
+            display: block;
+            cursor: pointer;
+        }
+
+        .payment-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .payment-option-content {
+            display: grid;
+            grid-template-columns: 54px 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 19px;
+            background: #fbf9f5;
+            border: 2px solid #e4d9cc;
+            border-radius: 17px;
+            transition: 0.2s;
+        }
+
+        .payment-option:hover .payment-option-content {
+            border-color: #c6aa88;
+            transform: translateY(-1px);
+        }
+
+        .payment-option input:checked + .payment-option-content {
+            background: #f8f0e4;
+            border-color: #8f673d;
+            box-shadow: 0 0 0 4px rgba(143, 103, 61, 0.1);
+        }
+
+        .payment-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 54px;
+            height: 54px;
+            background: #efe3d3;
+            border-radius: 14px;
+            font-size: 26px;
+        }
+
+        .payment-name {
+            display: block;
+            margin-bottom: 5px;
+            color: #493a2b;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .payment-description {
+            color: #8b7c6b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .radio-mark {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 23px;
+            height: 23px;
+            border: 2px solid #c8b9a7;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        .radio-mark::after {
+            width: 11px;
+            height: 11px;
+            background: #7e5934;
+            border-radius: 50%;
+            content: "";
+            opacity: 0;
+            transform: scale(0.4);
+            transition: 0.2s;
+        }
+
+        .payment-option input:checked
+        + .payment-option-content
+        .radio-mark {
+            border-color: #7e5934;
+        }
+
+        .payment-option input:checked
+        + .payment-option-content
+        .radio-mark::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .field-errors,
+        .form-errors {
+            margin: 0;
+            padding: 13px 15px;
+            color: #9e3d34;
+            background: #fff0ed;
+            border: 1px solid #f0c7bf;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .field-errors {
+            list-style: none;
+        }
+
+        .form-errors ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .payment-note {
+            display: flex;
+            gap: 11px;
+            padding: 16px;
+            color: #675847;
+            background: #f8f3eb;
+            border: 1px solid #ebe0d2;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .payment-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-top: 7px;
+        }
+
+        .secondary-button,
+        .primary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+            padding: 0 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .secondary-button {
+            color: #66533f;
+            background: #eee7de;
+            border: 1px solid #ded3c6;
+        }
+
+        .primary-button {
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #8c643b,
+                #49331f
+            );
+            border: none;
+            box-shadow: 0 13px 26px rgba(73, 51, 31, 0.25);
+        }
+
+        .secondary-button:hover,
+        .primary-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .order-summary {
+            position: sticky;
+            top: 25px;
+        }
+
+        .summary-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .summary-title h2 {
+            margin: 0;
+            color: #3b2e21;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 26px;
+        }
+
+        .summary-count {
+            padding: 6px 10px;
+            color: #735736;
+            background: #f0e4d4;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .summary-products {
+            display: grid;
+            gap: 15px;
+        }
+
+        .summary-product {
+            display: grid;
+            grid-template-columns: 65px 1fr;
+            gap: 13px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee5da;
+        }
+
+        .summary-product:last-child {
+            border-bottom: none;
+        }
+
+        .summary-image,
+        .summary-image-placeholder {
+            width: 65px;
+            height: 82px;
+            background: #eee5d9;
+            border-radius: 10px;
+        }
+
+        .summary-image {
+            object-fit: cover;
+        }
+
+        .summary-image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .summary-product-name {
+            display: block;
+            margin-bottom: 6px;
+            color: #43372c;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .summary-product-meta {
+            margin-bottom: 7px;
+            color: #938271;
+            font-size: 13px;
+        }
+
+        .summary-product-price {
+            color: #62472c;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .summary-totals {
+            display: grid;
+            gap: 12px;
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd2c5;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            color: #7c6d5d;
+            font-size: 14px;
+        }
+
+        .summary-row strong {
+            color: #45372a;
+            text-align: right;
+        }
+
+        .summary-total {
+            margin-top: 4px;
+            padding-top: 15px;
+            color: #3b2a1b;
+            border-top: 1px dashed #d7c8b6;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .summary-total strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 27px;
+        }
+
+        .delivery-address {
+            margin-top: 22px;
+            padding: 17px;
+            background: #f8f2e9;
+            border-radius: 14px;
+        }
+
+        .delivery-address h3 {
+            margin: 0 0 10px;
+            color: #4f3d2d;
+            font-size: 15px;
+        }
+
+        .delivery-address p {
+            margin: 0;
+            color: #7d6d5c;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 900px) {
+            .payment-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .payment-page {
+                width: min(100% - 20px, 1180px);
+                padding-top: 25px;
+            }
+
+            .payment-card {
+                padding: 23px 18px;
+                border-radius: 19px;
+            }
+
+            .payment-option-content {
+                grid-template-columns: 48px 1fr auto;
+                padding: 15px;
+            }
+
+            .payment-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .payment-actions {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
+
+            .secondary-button,
+            .primary-button {
+                width: 100%;
+            }
+
+            .checkout-steps {
+                gap: 7px;
+            }
+
+            .step-line {
+                width: 22px;
+            }
+
+            .step span:last-child {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="payment-page">
+
+    <a href="{% url 'orders:checkout' %}" class="back-link">
+        ← Повернутися до адреси доставки
+    </a>
+
+    <header class="payment-header">
+        <h1>Спосіб оплати</h1>
+
+        <p>
+            Оберіть зручний спосіб оплати замовлення.
+            Після цього ви зможете перевірити всі дані та підтвердити покупку.
+        </p>
+
+        <div class="checkout-steps">
+            <div class="step step-completed">
+                <span class="step-number">✓</span>
+                <span>Адреса</span>
+            </div>
+
+            <div class="step-line step-line-completed"></div>
+
+            <div class="step step-active">
+                <span class="step-number">2</span>
+                <span>Оплата</span>
+            </div>
+
+            <div class="step-line"></div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <span>Підтвердження</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="payment-layout">
+
+        <section class="payment-card">
+
+            <div class="section-heading">
+                <div class="section-icon">💳</div>
+
+                <div>
+                    <h2>Оберіть оплату</h2>
+
+                    <p>
+                        Виберіть один із доступних способів.
+                    </p>
+                </div>
+            </div>
+
+            <form method="post" class="payment-form">
+                {% csrf_token %}
+
+                {% if payment_form.non_field_errors %}
+                    <div class="form-errors">
+                        {{ payment_form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="payment-options">
+
+                    {% for value, label in payment_form.payment_method.field.choices %}
+                        <label class="payment-option">
+
+                            <input
+                                type="radio"
+                                name="{{ payment_form.payment_method.html_name }}"
+                                value="{{ value }}"
+                                {% if payment_form.payment_method.value == value %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <span class="payment-option-content">
+
+                                <span class="payment-icon">
+                                    {% if value == 'card' %}
+                                        💳
+                                    {% elif value == 'cash' %}
+                                        💵
+                                    {% elif value == 'cod' %}
+                                        📦
+                                    {% elif value == 'bank_transfer' %}
+                                        🏦
+                                    {% else %}
+                                        💰
+                                    {% endif %}
+                                </span>
+
+                                <span>
+                                    <span class="payment-name">
+                                        {{ label }}
+                                    </span>
+
+                                    <span class="payment-description">
+                                        {% if value == 'card' %}
+                                            Оплата банківською карткою онлайн.
+                                        {% elif value == 'cash' %}
+                                            Оплата готівкою під час отримання.
+                                        {% elif value == 'cod' %}
+                                            Післяплата у відділенні перевізника.
+                                        {% elif value == 'bank_transfer' %}
+                                            Оплата за банківськими реквізитами.
+                                        {% else %}
+                                            Оберіть цей спосіб для продовження.
+                                        {% endif %}
+                                    </span>
+                                </span>
+
+                                <span class="radio-mark"></span>
+                            </span>
+                        </label>
+                    {% endfor %}
+
+                </div>
+
+                {% if payment_form.payment_method.errors %}
+                    <ul class="field-errors">
+                        {% for error in payment_form.payment_method.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <div class="payment-note">
+                    <span>🔒</span>
+
+                    <span>
+                        Платіжні дані захищені. Магазин не зберігає
+                        повні реквізити вашої банківської картки.
+                    </span>
+                </div>
+
+                <div class="payment-actions">
+                    <a
+                        href="{% url 'orders:checkout' %}"
+                        class="secondary-button"
+                    >
+                        Назад
+                    </a>
+
+                    <button type="submit" class="primary-button">
+                        Перейти до підтвердження →
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <aside class="payment-card order-summary">
+
+<div class="summary-products">
+                {% for item in cart_items %}
+                    <div class="summary-product">
+
+                        {% if item.product.main_image %}
+                            <img
+                                src="{{ item.product.main_image.url }}"
+                                alt="{{ item.product.name }}"
+                                class="summary-image"
+                            >
+                        {% else %}
+                            <div class="summary-image-placeholder">
+                                📖
+                            </div>
+                        {% endif %}
+
+                        <div class="summary-product-info">
+                            <a
+                                href="{% url 'store:product_detail' item.product.id %}"
+                                class="summary-product-name"
+                            >
+                                {{ item.product.name }}
+                            </a>
+
+                            <div class="summary-product-meta">
+                                {{ item.quantity }} ×
+                                {{ item.product.price }} ₴
+                            </div>
+
+                            <div class="summary-product-price">
+                                {{ item.total_price }} ₴
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>У кошику немає товарів.</p>
+                {% endfor %}
+            </div>
+
+
+            <div class="summary-totals">
+
+                <div class="summary-row">
+                    <span>Сума товарів</span>
+                    <strong>{{ subtotal }} ₴</strong>
+                </div>
+
+                {% if discount_amount %}
+                    <div class="summary-row">
+                        <span>Знижка</span>
+                        <strong>− {{ discount_amount }} ₴</strong>
+                    </div>
+                {% endif %}
+
+                <div class="summary-row">
+                    <span>Доставка</span>
+                    <strong>За тарифами перевізника</strong>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span>До сплати</span>
+
+                    <strong>
+                        {% if total %}
+                            {{ total }} ₴
+                        {% else %}
+                            {{ subtotal }} ₴
+                        {% endif %}
+                    </strong>
+                </div>
+
+            </div>
+
+            {% if checkout_address %}
+                <div class="delivery-address">
+                    <h3>📍 Адреса доставки</h3>
+
+                    <p>
+                        {{ checkout_address.recipient_name }}<br>
+                        {{ checkout_address.city }},
+                        {{ checkout_address.address_line }}<br>
+                        {{ checkout_address.phone }}
+                    </p>
+                </div>
+            {% endif %}
+
+        </aside>
+
+    </div>
+</main>
+</body>
+</html>
+```

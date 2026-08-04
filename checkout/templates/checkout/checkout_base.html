@@ -1,0 +1,247 @@
+
+
+{% block content %}
+<style>
+    :root {
+        --checkout-primary: #7c5cff;
+        --checkout-primary-dark: #6544e9;
+        --checkout-text: #25223a;
+        --checkout-muted: #77738c;
+        --checkout-background: #f7f6fc;
+        --checkout-card: #ffffff;
+        --checkout-border: #e9e6f3;
+        --checkout-success: #28a36a;
+        --checkout-danger: #d94d62;
+    }
+
+    .checkout-page {
+        min-height: calc(100vh - 100px);
+        padding: 55px 20px;
+        background:
+            radial-gradient(circle at top left, rgba(124, 92, 255, 0.13), transparent 32%),
+            radial-gradient(circle at bottom right, rgba(255, 180, 93, 0.14), transparent 30%),
+            var(--checkout-background);
+    }
+
+    .checkout-wrapper {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    .checkout-header {
+        margin-bottom: 32px;
+        text-align: center;
+    }
+
+    .checkout-header h1 {
+        margin: 0 0 10px;
+        color: var(--checkout-text);
+        font-size: clamp(28px, 4vw, 42px);
+        font-weight: 800;
+    }
+
+    .checkout-header p {
+        margin: 0;
+        color: var(--checkout-muted);
+        font-size: 16px;
+    }
+
+    .checkout-progress {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 32px 0;
+    }
+
+    .progress-step {
+        position: relative;
+        padding: 16px 10px;
+        border: 1px solid var(--checkout-border);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.75);
+        color: var(--checkout-muted);
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .progress-step.active {
+        border-color: var(--checkout-primary);
+        background: var(--checkout-primary);
+        color: #ffffff;
+        box-shadow: 0 10px 28px rgba(124, 92, 255, 0.23);
+    }
+
+    .progress-step.completed {
+        border-color: rgba(40, 163, 106, 0.25);
+        background: rgba(40, 163, 106, 0.1);
+        color: var(--checkout-success);
+    }
+
+    .checkout-card {
+        padding: 34px;
+        border: 1px solid rgba(233, 230, 243, 0.9);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 22px 60px rgba(48, 40, 90, 0.1);
+    }
+
+    .checkout-card-title {
+        margin: 0 0 8px;
+        color: var(--checkout-text);
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .checkout-card-description {
+        margin: 0 0 28px;
+        color: var(--checkout-muted);
+        line-height: 1.6;
+    }
+
+    .checkout-form p {
+        margin-bottom: 20px;
+    }
+
+    .checkout-form label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--checkout-text);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .checkout-form input:not([type="radio"]),
+    .checkout-form select,
+    .checkout-form textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--checkout-border);
+        border-radius: 13px;
+        outline: none;
+        background: #fbfaff;
+        color: var(--checkout-text);
+        font: inherit;
+        transition: 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .checkout-form input:focus,
+    .checkout-form select:focus,
+    .checkout-form textarea:focus {
+        border-color: var(--checkout-primary);
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.11);
+    }
+
+    .checkout-form textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .checkout-form ul.errorlist {
+        margin: 7px 0 0;
+        padding: 0;
+        color: var(--checkout-danger);
+        font-size: 13px;
+        list-style: none;
+    }
+
+    .form-help {
+        margin-top: 6px;
+        color: var(--checkout-muted);
+        font-size: 13px;
+    }
+
+    .checkout-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        margin-top: 30px;
+    }
+
+    .checkout-button {
+        display: inline-flex;
+        min-height: 50px;
+        padding: 0 24px;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 14px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .checkout-button-primary {
+        background: var(--checkout-primary);
+        color: #ffffff;
+        box-shadow: 0 12px 26px rgba(124, 92, 255, 0.25);
+    }
+
+    .checkout-button-primary:hover {
+        background: var(--checkout-primary-dark);
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    .checkout-button-secondary {
+        border: 1px solid var(--checkout-border);
+        background: #ffffff;
+        color: var(--checkout-text);
+    }
+
+    .checkout-button-secondary:hover {
+        border-color: var(--checkout-primary);
+        color: var(--checkout-primary);
+    }
+
+    .checkout-error {
+        margin-bottom: 24px;
+        padding: 15px 18px;
+        border: 1px solid rgba(217, 77, 98, 0.25);
+        border-radius: 13px;
+        background: rgba(217, 77, 98, 0.08);
+        color: var(--checkout-danger);
+        font-weight: 600;
+    }
+
+    @media (max-width: 650px) {
+        .checkout-page {
+            padding: 30px 14px;
+        }
+
+        .checkout-card {
+            padding: 23px 18px;
+            border-radius: 19px;
+        }
+
+        .checkout-progress {
+            gap: 6px;
+        }
+
+        .progress-step {
+            padding: 12px 5px;
+            font-size: 12px;
+        }
+
+        .checkout-actions {
+            flex-direction: column-reverse;
+        }
+
+        .checkout-button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+</style>
+
+<main class="checkout-page">
+    <div class="checkout-wrapper">
+        {% block checkout_content %}
+        {% endblock %}
+    </div>
+</main>
+{% endblock %}

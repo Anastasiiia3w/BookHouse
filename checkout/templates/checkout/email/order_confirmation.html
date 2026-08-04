@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Підтвердження замовлення</title>
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #f4f2fa;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #29263a;
+">
+<table
+    role="presentation"
+    width="100%"
+    cellspacing="0"
+    cellpadding="0"
+    border="0"
+    style="background-color: #f4f2fa;"
+>
+    <tr>
+        <td align="center" style="padding: 35px 15px;">
+            <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                    max-width: 650px;
+                    overflow: hidden;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    box-shadow: 0 15px 45px rgba(44, 37, 80, 0.1);
+                "
+            >
+                <tr>
+                    <td style="
+                        padding: 35px;
+                        background: linear-gradient(135deg, #7c5cff, #957cff);
+                        color: #ffffff;
+                        text-align: center;
+                    ">
+                        <div style="
+                            width: 65px;
+                            height: 65px;
+                            margin: 0 auto 18px;
+                            border-radius: 50%;
+                            background-color: rgba(255, 255, 255, 0.2);
+                            font-size: 34px;
+                            line-height: 65px;
+                        ">
+                            ✓
+                        </div>
+
+                        <h1 style="
+                            margin: 0 0 10px;
+                            font-size: 29px;
+                        ">
+                            Замовлення прийнято!
+                        </h1>
+
+                        <p style="
+                            margin: 0;
+                            color: rgba(255, 255, 255, 0.88);
+                            font-size: 15px;
+                        ">
+                            Замовлення №{{ order.id }}
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 35px;">
+                        <p style="
+                            margin: 0 0 15px;
+                            font-size: 17px;
+                        ">
+                            Вітаємо,
+                            <strong>
+                                {{ user.first_name|default:user.email }}
+                            </strong>!
+                        </p>
+
+                        <p style="
+                            margin: 0 0 28px;
+                            color: #747086;
+                            line-height: 1.7;
+                        ">
+                            Дякуємо за ваше замовлення. Ми вже отримали
+                            його та незабаром розпочнемо обробку.
+                        </p>
+
+                        <h2 style="
+                            margin: 0 0 18px;
+                            font-size: 20px;
+                        ">
+                            Ваше замовлення
+                        </h2>
+
+                        <table
+                            role="presentation"
+                            width="100%"
+                            cellspacing="0"
+                            cellpadding="0"
+                            border="0"
+                        >
+                            {% for item in items %}
+                                <tr>
+                                    <td style="
+                                        padding: 16px 0;
+                                        border-bottom: 1px solid #ece9f4;
+                                    ">
+                                        <strong style="
+                                            display: block;
+                                            margin-bottom: 6px;
+                                        ">
+                                            {{ item.product.name }}
+                                        </strong>
+
+                                        <span style="
+                                            color: #77738c;
+                                            font-size: 14px;
+                                        ">
+                                            {{ item.quantity }} ×
+                                            {{ item.price }} грн
+                                        </span>
+                                    </td>
+
+                                    <td
+                                        align="right"
+                                        style="
+                                            padding: 16px 0;
+                                            border-bottom: 1px solid #ece9f4;
+                                            font-weight: bold;
+                                            white-space: nowrap;
+                                        "
+                                    >
+                                        {% widthratio item.price 1 item.quantity %}
+                                        грн
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+
+                        <table
+                            role="presentation"
+                            width="100%"
+                            cellspacing="0"
+                            cellpadding="0"
+                            border="0"
+                            style="margin-top: 25px;"
+                        >
+                            <tr>
+                                <td style="
+                                    padding: 18px;
+                                    border-radius: 14px;
+                                    background-color: #f8f7fc;
+                                ">
+                                    <span style="
+                                        color: #77738c;
+                                        font-size: 14px;
+                                    ">
+                                        Загальна сума
+                                    </span>
+
+                                    <strong style="
+                                        float: right;
+                                        font-size: 20px;
+                                        color: #7c5cff;
+                                    ">
+                                        {{ order.total }} грн
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div style="
+                            margin-top: 24px;
+                            padding: 20px;
+                            border-radius: 14px;
+                            background-color: #f8f7fc;
+                        ">
+                            <h3 style="
+                                margin: 0 0 12px;
+                                font-size: 16px;
+                            ">
+                                Адреса доставки
+                            </h3>
+
+                            <p style="
+                                margin: 0;
+                                color: #747086;
+                                line-height: 1.7;
+                            ">
+                                {{ address.city }}<br>
+                                {{ address.street }}<br>
+
+                                {% if address.postal_code %}
+                                    Індекс: {{ address.postal_code }}<br>
+                                {% endif %}
+
+                                {% if address.phone %}
+                                    Телефон: {{ address.phone }}
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <p style="
+                            margin: 30px 0 0;
+                            color: #77738c;
+                            font-size: 14px;
+                            line-height: 1.6;
+                            text-align: center;
+                        ">
+                            Ми повідомимо вас, коли статус замовлення зміниться.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="
+                        padding: 22px;
+                        background-color: #29263a;
+                        color: #c9c5d7;
+                        text-align: center;
+                        font-size: 13px;
+                    ">
+                        © {% now "Y" %} Book Store.
+                        Дякуємо, що обираєте нас.
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,644 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Замовлення оформлено</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #302a23;
+            background:
+                radial-gradient(
+                    circle at top center,
+                    rgba(185, 147, 91, 0.25),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    135deg,
+                    #f8f4ec 0%,
+                    #ece1d2 100%
+                );
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .success-page {
+            width: min(1000px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 55px 0 75px;
+        }
+
+        .success-card {
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(91, 67, 40, 0.13);
+            border-radius: 30px;
+            box-shadow: 0 25px 70px rgba(61, 44, 26, 0.16);
+        }
+
+        .success-header {
+            padding: 48px 35px 40px;
+            text-align: center;
+            color: #fff;
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(255, 255, 255, 0.17),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #76532f,
+                    #3f2d1d
+                );
+        }
+
+        .success-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 23px;
+            color: #4a321d;
+            background: #f6e7cd;
+            border: 7px solid rgba(255, 255, 255, 0.17);
+            border-radius: 50%;
+            font-size: 45px;
+            box-shadow: 0 15px 32px rgba(0, 0, 0, 0.22);
+        }
+
+        .success-header h1 {
+            margin: 0 0 12px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(36px, 5vw, 53px);
+        }
+
+        .success-header p {
+            max-width: 610px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .order-number {
+            display: inline-flex;
+            margin-top: 24px;
+            padding: 10px 17px;
+            color: #f8e9d0;
+            background: rgba(255, 255, 255, 0.11);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .success-content {
+            padding: 36px;
+        }
+
+        .status-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 28px;
+            padding: 18px;
+            color: #4b5e41;
+            background: #eef7e9;
+            border: 1px solid #d2e8c8;
+            border-radius: 16px;
+            line-height: 1.6;
+        }
+
+        .status-message strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #35502d;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .info-card {
+            padding: 23px;
+            background: #faf7f2;
+            border: 1px solid #ece2d6;
+            border-radius: 18px;
+        }
+
+        .info-card h2 {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin: 0 0 17px;
+            color: #48382a;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 21px;
+        }
+
+        .info-list {
+            display: grid;
+            gap: 11px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            color: #817261;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .info-row strong {
+            max-width: 65%;
+            color: #45392d;
+            text-align: right;
+        }
+
+        .order-section {
+            padding: 25px;
+            background: #fff;
+            border: 1px solid #e8ddd0;
+            border-radius: 20px;
+        }
+
+        .order-section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .order-section-title h2 {
+            margin: 0;
+            color: #403225;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 25px;
+        }
+
+        .order-status {
+            padding: 8px 12px;
+            color: #7a572f;
+            background: #f5ead9;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .order-products {
+            display: grid;
+            gap: 15px;
+        }
+
+        .order-product {
+            display: grid;
+            grid-template-columns: 72px 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee5da;
+        }
+
+        .order-product:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .product-image {
+            width: 72px;
+            height: 90px;
+            object-fit: cover;
+            background: #eee6db;
+            border-radius: 11px;
+        }
+
+        .product-image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 90px;
+            background: #eee6db;
+            border-radius: 11px;
+            font-size: 28px;
+        }
+
+        .product-name {
+            margin: 0 0 7px;
+            color: #42362b;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.45;
+        }
+
+        .product-quantity {
+            color: #938372;
+            font-size: 13px;
+        }
+
+        .product-total {
+            color: #5c4127;
+            font-size: 16px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .order-totals {
+            display: grid;
+            gap: 12px;
+            margin-top: 23px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd1c3;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            color: #7e6f5e;
+            font-size: 14px;
+        }
+
+        .total-row strong {
+            color: #47382a;
+        }
+
+        .discount-row strong {
+            color: #3b7a49;
+        }
+
+        .final-total {
+            margin-top: 4px;
+            padding-top: 15px;
+            border-top: 1px dashed #d4c6b5;
+            color: #3a2b1e;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .final-total strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 28px;
+        }
+
+        .success-actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            padding: 0 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 800;
+            transition: 0.2s;
+        }
+
+        .button-primary {
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #856039,
+                #49331f
+            );
+            box-shadow: 0 12px 25px rgba(73, 51, 31, 0.24);
+        }
+
+        .button-secondary {
+            color: #654f39;
+            background: #eee6dc;
+            border: 1px solid #dfd3c5;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .support-note {
+            margin: 26px 0 0;
+            color: #8d7d6b;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 720px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .success-content {
+                padding: 24px 18px;
+            }
+
+            .success-header {
+                padding: 40px 20px 34px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .success-page {
+                width: min(100% - 20px, 1000px);
+                padding-top: 25px;
+            }
+
+            .success-card {
+                border-radius: 21px;
+            }
+
+            .order-product {
+                grid-template-columns: 58px 1fr;
+            }
+
+            .product-image,
+            .product-image-placeholder {
+                width: 58px;
+                height: 74px;
+            }
+
+            .product-total {
+                grid-column: 2;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .info-row strong {
+                max-width: 100%;
+                text-align: left;
+            }
+
+            .success-actions {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="success-page">
+
+    <section class="success-card">
+
+        <header class="success-header">
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h1>Дякуємо за замовлення!</h1>
+
+            <p>
+                Ваше замовлення успішно оформлено.
+                Ми вже отримали його та незабаром почнемо підготовку.
+            </p>
+
+            <div class="order-number">
+                Замовлення №{{ order.id }}
+            </div>
+        </header>
+
+        <div class="success-content">
+
+            <div class="status-message">
+                <span>📩</span>
+
+                <div>
+                    <strong>Замовлення прийнято</strong>
+
+                    Інформацію про замовлення буде надіслано на
+                    адресу {{ order.shipping_address.recipient_email }}.
+                </div>
+            </div>
+
+            <div class="info-grid">
+
+                <section class="info-card">
+                    <h2>
+                        <span>📦</span>
+                        Замовлення
+                    </h2>
+
+                    <div class="info-list">
+                        <div class="info-row">
+                            <span>Номер</span>
+                            <strong>№{{ order.id }}</strong>
+                        </div>
+
+                        <div class="info-row">
+                            <span>Дата</span>
+
+                            <strong>
+                                {{ order.created_at|date:"d.m.Y H:i" }}
+                            </strong>
+                        </div>
+
+                        <div class="info-row">
+                            <span>Статус</span>
+
+                            <strong>
+                                {{ order.get_status_display }}
+                            </strong>
+                        </div>
+
+                        {% if order.estimated_delivery_date %}
+                            <div class="info-row">
+                                <span>Орієнтовна доставка</span>
+
+                                <strong>
+                                    {{ order.estimated_delivery_date|date:"d.m.Y" }}
+                                </strong>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section class="info-card">
+                    <h2>
+                        <span>🚚</span>
+                        Доставка
+                    </h2>
+
+                    <div class="info-list">
+                        <div class="info-row">
+                            <span>Отримувач</span>
+
+                            <strong>
+                                {{ order.shipping_address.recipient_name }}
+                            </strong>
+                        </div>
+
+                        <div class="info-row">
+                            <span>Телефон</span>
+
+                            <strong>
+                                {{ order.shipping_address.phone }}
+                            </strong>
+                        </div>
+
+                        <div class="info-row">
+                            <span>Місто</span>
+
+                            <strong>
+                                {{ order.shipping_address.city }}
+                            </strong>
+                        </div>
+
+                        <div class="info-row">
+                            <span>Адреса</span>
+
+                            <strong>
+                                {{ order.shipping_address.address_line }}
+                            </strong>
+                        </div>
+
+                        {% if order.shipping_address.postal_code %}
+                            <div class="info-row">
+                                <span>Поштовий індекс</span>
+
+                                <strong>
+                                    {{ order.shipping_address.postal_code }}
+                                </strong>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+            </div>
+
+            <section class="order-section">
+
+                <div class="order-section-title">
+                    <h2>Склад замовлення</h2>
+
+                    <span class="order-status">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="order-products">
+                    {% for item in order.items.all %}
+                        <div class="order-product">
+
+                            {% if item.product.main_image %}
+                                <img
+                                    src="{{ item.product.main_image.url }}"
+                                    alt="{{ item.product_name }}"
+                                    class="product-image"
+                                >
+                            {% else %}
+                                <div class="product-image-placeholder">
+                                    📖
+                                </div>
+                            {% endif %}
+
+                            <div>
+                                <p class="product-name">
+                                    {{ item.product_name }}
+                                </p>
+
+                                <span class="product-quantity">
+                                    {{ item.quantity }} ×
+                                    {{ item.price }} ₴
+                                </span>
+                            </div>
+
+                            <div class="product-total">
+                                {{ item.total_price }} ₴
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>Позиції замовлення відсутні.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="order-totals">
+                    <div class="total-row">
+                        <span>Сума товарів</span>
+                        <strong>{{ order.subtotal }} ₴</strong>
+                    </div>
+
+                    {% if order.discount_amount %}
+                        <div class="total-row discount-row">
+                            <span>Знижка</span>
+
+                            <strong>
+                                − {{ order.discount_amount }} ₴
+                            </strong>
+                        </div>
+                    {% endif %}
+
+                    <div class="total-row">
+                        <span>Доставка</span>
+                        <strong>Безкоштовно</strong>
+                    </div>
+
+                    <div class="total-row final-total">
+                        <span>Разом</span>
+                        <strong>{{ order.total }} ₴</strong>
+                    </div>
+                </div>
+            </section>
+
+            <div class="success-actions">
+                <a
+                    href="{% url 'store:home' %}"
+                    class="button button-primary"
+                >
+                    Продовжити покупки
+                </a>
+
+                <a
+                    href="{% url 'users:profile' %}"
+                    class="button button-secondary"
+                >
+                    Перейти до профілю
+                </a>
+            </div>
+
+            <p class="support-note">
+                Якщо у вас виникли питання щодо замовлення,
+                вкажіть його номер під час звернення до підтримки.
+            </p>
+
+        </div>
+    </section>
+</main>
+</body>
+</html>

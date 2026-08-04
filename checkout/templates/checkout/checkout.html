@@ -1,0 +1,770 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Оформлення замовлення</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #302a23;
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(195, 154, 101, 0.22),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    135deg,
+                    #f8f4ed 0%,
+                    #eee4d6 100%
+                );
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        .checkout-page {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 42px 0 70px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            color: #745d43;
+            font-size: 15px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #35291d;
+            transform: translateX(-4px);
+        }
+
+        .checkout-header {
+            margin-bottom: 30px;
+        }
+
+        .checkout-header h1 {
+            margin: 0 0 10px;
+            color: #34281c;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(36px, 5vw, 54px);
+        }
+
+        .checkout-header p {
+            max-width: 650px;
+            margin: 0;
+            color: #7b6d5e;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .checkout-steps {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #998a79;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e3d8ca;
+        }
+
+        .step-active {
+            color: #583f27;
+        }
+
+        .step-active .step-number {
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #936a3f,
+                #513820
+            );
+            box-shadow: 0 7px 16px rgba(81, 56, 32, 0.24);
+        }
+
+        .step-line {
+            width: 55px;
+            height: 2px;
+            background: #ded3c5;
+        }
+
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(330px, 0.7fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .checkout-section {
+            padding: 34px;
+            background: rgba(255, 255, 255, 0.93);
+            border: 1px solid rgba(100, 75, 45, 0.12);
+            border-radius: 25px;
+            box-shadow: 0 20px 55px rgba(63, 45, 27, 0.12);
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+
+        .section-icon {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 15px;
+            background: #f0e3d0;
+            font-size: 23px;
+        }
+
+        .section-heading h2 {
+            margin: 0 0 5px;
+            color: #3e3022;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 27px;
+        }
+
+        .section-heading p {
+            margin: 0;
+            color: #948473;
+            font-size: 14px;
+        }
+
+        .checkout-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-field {
+            min-width: 0;
+        }
+
+        .form-field-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #5a4a39;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .required-mark {
+            color: #b64e3c;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 14px 16px;
+            color: #352e27;
+            background: #fbf9f5;
+            border: 1px solid #ded3c5;
+            border-radius: 13px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-field textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            border-color: #9b7346;
+            box-shadow: 0 0 0 4px rgba(155, 115, 70, 0.13);
+        }
+
+        .field-errors {
+            margin: 8px 0 0;
+            padding: 0;
+            list-style: none;
+            color: #a13d34;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .form-errors {
+            grid-column: 1 / -1;
+            padding: 14px 16px;
+            color: #983a31;
+            background: #fff0ed;
+            border: 1px solid #f1c5bd;
+            border-radius: 13px;
+            font-size: 14px;
+        }
+
+        .form-errors ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .checkout-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .security-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8c7c6a;
+            font-size: 13px;
+        }
+
+        .submit-button {
+            min-height: 52px;
+            padding: 0 27px;
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #8c643b,
+                #49331f
+            );
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 13px 26px rgba(73, 51, 31, 0.25);
+            transition: 0.2s;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 17px 30px rgba(73, 51, 31, 0.3);
+        }
+
+        .order-summary {
+            position: sticky;
+            top: 25px;
+        }
+
+        .summary-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .summary-title h2 {
+            margin: 0;
+            color: #3b2e21;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 26px;
+        }
+
+        .summary-count {
+            padding: 6px 10px;
+            color: #735736;
+            background: #f0e4d4;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .summary-products {
+            display: grid;
+            gap: 16px;
+        }
+
+        .summary-product {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 14px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee5da;
+        }
+
+        .summary-product:last-child {
+            border-bottom: none;
+        }
+
+        .summary-image {
+            width: 72px;
+            height: 90px;
+            object-fit: cover;
+            background: #eee5d9;
+            border-radius: 11px;
+        }
+
+        .summary-image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 90px;
+            background: #eee5d9;
+            border-radius: 11px;
+            font-size: 28px;
+        }
+
+        .summary-product-info {
+            min-width: 0;
+        }
+
+        .summary-product-name {
+            display: block;
+            margin-bottom: 7px;
+            overflow: hidden;
+            color: #43372c;
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.4;
+            text-overflow: ellipsis;
+        }
+
+        .summary-product-meta {
+            margin-bottom: 8px;
+            color: #938271;
+            font-size: 13px;
+        }
+
+        .summary-product-price {
+            color: #62472c;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .summary-totals {
+            display: grid;
+            gap: 12px;
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd2c5;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            color: #7c6d5d;
+            font-size: 14px;
+        }
+
+        .summary-row strong {
+            color: #45372a;
+        }
+
+        .summary-total {
+            margin-top: 5px;
+            padding-top: 15px;
+            border-top: 1px dashed #d7c8b6;
+            color: #3b2a1b;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .summary-total strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 27px;
+        }
+
+        .delivery-note {
+            display: flex;
+            gap: 11px;
+            margin-top: 22px;
+            padding: 15px;
+            color: #665746;
+            background: #f8f2e9;
+            border-radius: 13px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 900px) {
+            .checkout-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .checkout-page {
+                width: min(100% - 20px, 1180px);
+                padding-top: 25px;
+            }
+
+            .checkout-section {
+                padding: 23px 18px;
+                border-radius: 19px;
+            }
+
+            .checkout-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-field-full,
+            .form-errors,
+            .checkout-actions {
+                grid-column: auto;
+            }
+
+            .checkout-actions {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
+
+            .submit-button {
+                width: 100%;
+            }
+
+            .checkout-steps {
+                gap: 7px;
+            }
+
+            .step-line {
+                width: 22px;
+            }
+
+            .step span:last-child {
+                display: none;
+            }
+
+            .summary-product {
+                grid-template-columns: 62px 1fr;
+            }
+
+            .summary-image,
+            .summary-image-placeholder {
+                width: 62px;
+                height: 78px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="checkout-page">
+
+    <a href="{% url 'cart:detail' %}" class="back-link">
+        ← Повернутися до кошика
+    </a>
+
+    <header class="checkout-header">
+        <h1>Оформлення замовлення</h1>
+
+        <p>
+            Заповніть контактні дані та адресу, куди потрібно
+            доставити ваше замовлення.
+        </p>
+
+        <div class="checkout-steps">
+            <div class="step step-active">
+                <span class="step-number">1</span>
+                <span>Адреса доставки</span>
+            </div>
+
+            <div class="step-line"></div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <span>Оплата</span>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <span>Підтвердження</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="checkout-layout">
+
+        <section class="checkout-section">
+            <div class="section-heading">
+                <div class="section-icon">🚚</div>
+
+                <div>
+                    <h2>Дані для доставки</h2>
+
+                    <p>
+                        Поля із зірочкою є обов’язковими.
+                    </p>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'checkout:checkout' %}" class="checkout-form">
+
+                {% csrf_token %}
+
+                {% if address_form.non_field_errors %}
+                    <div class="form-errors">
+                        {{ address_form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-field">
+                    <label for="{{ address_form.recipient_name.id_for_label }}">
+                        {{ address_form.recipient_name.label }}
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    {{ address_form.recipient_name }}
+
+                    {% if address_form.recipient_name.errors %}
+                        <ul class="field-errors">
+                            {% for error in address_form.recipient_name.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ address_form.recipient_email.id_for_label }}">
+                        {{ address_form.recipient_email.label }}
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    {{ address_form.recipient_email }}
+
+                    {% if address_form.recipient_email.errors %}
+                        <ul class="field-errors">
+                            {% for error in address_form.recipient_email.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ address_form.phone.id_for_label }}">
+                        {{ address_form.phone.label }}
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    {{ address_form.phone }}
+
+                    {% if address_form.phone.errors %}
+                        <ul class="field-errors">
+                            {% for error in address_form.phone.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ address_form.city.id_for_label }}">
+                        {{ address_form.city.label }}
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    {{ address_form.city }}
+
+                    {% if address_form.city.errors %}
+                        <ul class="field-errors">
+                            {% for error in address_form.city.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ address_form.postal_code.id_for_label }}">
+                        {{ address_form.postal_code.label }}
+                    </label>
+
+                    {{ address_form.postal_code }}
+
+                    {% if address_form.postal_code.errors %}
+                        <ul class="field-errors">
+                            {% for error in address_form.postal_code.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    <label for="{{ address_form.address_line.id_for_label }}">
+                        {{ address_form.address_line.label }}
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    {{ address_form.address_line }}
+
+                    {% if address_form.address_line.errors %}
+                        <ul class="field-errors">
+                            {% for error in address_form.address_line.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="form-field form-field-full">
+                    <label for="{{ address_form.comment.id_for_label }}">
+                        {{ address_form.comment.label }}
+                    </label>
+
+                    {{ address_form.comment }}
+
+                    {% if address_form.comment.errors %}
+                        <ul class="field-errors">
+                            {% for error in address_form.comment.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="checkout-actions">
+                    <div class="security-text">
+                        <span>🔒</span>
+                        Ваші дані захищені
+                    </div>
+
+                    <button type="submit" class="submit-button">
+                        Підтвердити замовлення →
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <aside class="checkout-section order-summary">
+            <div class="summary-title">
+                <h2>Ваше замовлення</h2>
+
+                <span class="summary-count">
+                    {{ cart_items|length }} товарів
+                </span>
+            </div>
+
+            <div class="summary-products">
+                {% for item in cart_items %}
+                    <div class="summary-product">
+
+                        {% if item.product.main_image %}
+                            <img
+                                src="{{ item.product.main_image.url }}"
+                                alt="{{ item.product.name }}"
+                                class="summary-image"
+                            >
+                        {% else %}
+                            <div class="summary-image-placeholder">
+                                📖
+                            </div>
+                        {% endif %}
+
+                        <div class="summary-product-info">
+                            <a
+                                href="{% url 'store:product_detail' item.product.id %}"
+                                class="summary-product-name"
+                            >
+                                {{ item.product.name }}
+                            </a>
+
+                            <div class="summary-product-meta">
+                                {{ item.quantity }} ×
+                                {{ item.product.price }} ₴
+                            </div>
+
+                            <div class="summary-product-price">
+                                {{ item.total_price }} ₴
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>У кошику немає товарів.</p>
+                {% endfor %}
+            </div>
+
+            <div class="summary-totals">
+                <div class="summary-row">
+                    <span>Сума товарів</span>
+                    <strong>{{ subtotal }} ₴</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Доставка</span>
+                    <strong>Безкошттовно</strong>
+                </div>
+
+                <div class="summary-row summary-total">
+                    <span>До сплати</span>
+                    <strong>{{ subtotal }} ₴</strong>
+                </div>
+            </div>
+
+            <div class="delivery-note">
+                <span>📦</span>
+
+                <span>
+                    Після оформлення ми підготуємо замовлення
+                    та повідомимо про його відправлення.
+                </span>
+            </div>
+        </aside>
+
+    </div>
+</main>
+</body>
+</html>

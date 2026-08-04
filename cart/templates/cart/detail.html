@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8f4ec;
+            color: #333;
+        }
+
+
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            width: min(1180px, 92%);
+            margin: 45px auto;
+        }
+
+        .page-title {
+            margin-bottom: 28px;
+            color: #1e3a5f;
+            font-size: 38px;
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 130px 1fr auto;
+            gap: 22px;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(30, 58, 95, 0.08);
+        }
+
+        .book-image {
+            width: 130px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: #ececec;
+        }
+
+        .image-placeholder {
+            width: 130px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #ececec;
+            color: #888;
+            font-size: 42px;
+        }
+
+        .item-info h2 {
+            margin: 0 0 8px;
+            color: #1e3a5f;
+            font-size: 23px;
+        }
+
+        .author {
+            margin: 0 0 14px;
+            color: #777;
+        }
+
+        .item-price {
+            margin-bottom: 14px;
+            color: #d4a017;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .update-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .update-form select,
+        .update-form input {
+            padding: 9px 10px;
+            border: 1px solid #d6d6d6;
+            border-radius: 9px;
+        }
+
+        .update-button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 9px;
+            background: #1e3a5f;
+            color: white;
+            cursor: pointer;
+        }
+
+        .update-button:hover {
+            background: #152d4a;
+        }
+
+        .item-actions {
+            min-width: 125px;
+            text-align: right;
+        }
+
+        .item-total-label {
+            margin-bottom: 5px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .item-total {
+            margin-bottom: 18px;
+            color: #1e3a5f;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .remove-button {
+            padding: 10px 14px;
+            border: 1px solid #c92a2a;
+            border-radius: 9px;
+            background: white;
+            color: #c92a2a;
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            background: #fff0f0;
+        }
+
+        .summary {
+            position: sticky;
+            top: 24px;
+            padding: 26px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(30, 58, 95, 0.08);
+        }
+
+        .summary h2 {
+            margin-top: 0;
+            color: #1e3a5f;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 16px 0;
+            color: #666;
+        }
+
+        .summary-total {
+            margin-top: 20px;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #e6e6e6;
+            color: #1e3a5f;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .checkout-button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 14px;
+            border: none;
+            border-radius: 11px;
+            background: #d4a017;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .checkout-button:hover {
+            background: #b98a12;
+        }
+
+        .clear-button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #b42318;
+            cursor: pointer;
+        }
+
+        .continue-link {
+            display: inline-block;
+            margin-top: 24px;
+            color: #1e3a5f;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .continue-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-cart {
+            padding: 70px 25px;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(30, 58, 95, 0.08);
+        }
+
+        .empty-icon {
+            font-size: 70px;
+        }
+
+        .empty-cart h2 {
+            color: #1e3a5f;
+        }
+
+        .empty-cart a {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 13px 20px;
+            border-radius: 10px;
+            background: #1e3a5f;
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 850px) {
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .summary {
+                position: static;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .cart-item {
+                grid-template-columns: 90px 1fr;
+            }
+
+            .book-image,
+            .image-placeholder {
+                width: 90px;
+                height: 130px;
+            }
+
+            .item-actions {
+                grid-column: 1 / -1;
+                text-align: left;
+            }
+
+            .page-title {
+                font-size: 30px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<header>
+
+    <span>
+        Кошик: {{ cart|length }}
+    </span>
+</header>
+
+<main>
+
+    <h1 class="page-title">
+        Ваш кошик
+    </h1>
+
+    {% if cart|length %}
+
+        <div class="cart-layout">
+
+            <section class="cart-list">
+
+                {% for item in cart %}
+                    <article class="cart-item">
+
+                        {% if item.product.main_image %}
+                            <img
+                                src="{{ item.product.main_image.url }}"
+                                alt="{{ item.product.name }}"
+                                class="book-image"
+                            >
+                        {% else %}
+                            <div class="image-placeholder">
+                                📖
+                            </div>
+                        {% endif %}
+
+                        <div class="item-info">
+                            <h2>
+                                {{ item.product.name }}
+                            </h2>
+
+                            <p class="author">
+                                Автор: {{ item.product.author }}
+                            </p>
+
+                            <p class="item-price">
+                                {{ item.price }} грн
+                            </p>
+
+                            <form
+                                action="{% url 'cart:cart_add' item.product.id %}"
+                                method="post"
+                                class="update-form"
+                            >
+                                {% csrf_token %}
+
+                                {{ item.update_quantity_form.quantity }}
+                                {{ item.update_quantity_form.override }}
+
+                                <button
+                                    type="submit"
+                                    class="update-button"
+                                >
+                                    Оновити
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="item-actions">
+                            <div class="item-total-label">
+                                Разом
+                            </div>
+
+                            <div class="item-total">
+                                {{ item.total_price }} грн
+                            </div>
+
+                            <form
+                                action="{% url 'cart:cart_remove' item.product.id %}"
+                                method="post"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="remove-button"
+                                >
+                                    Видалити
+                                </button>
+                            </form>
+                        </div>
+
+                    </article>
+                {% endfor %}
+
+                <a
+                    href="{% url 'store:home' %}"
+                    class="continue-link"
+                >
+                    ← Продовжити покупки
+                </a>
+
+            </section>
+
+            <aside class="summary">
+                <h2>Підсумок</h2>
+
+                <div class="summary-row">
+                    <span>Кількість товарів</span>
+                    <span>{{ cart|length }}</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Доставка</span>
+                    <span>Безкоштовно</span>
+                </div>
+
+                <div class="summary-total">
+                    <span>Усього</span>
+                    <span>{{ cart.get_total_price }} грн</span>
+                </div>
+                <form
+                    action="{% url 'orders:checkout' %}"
+                    method="post"
+                >
+
+                    {% csrf_token %}
+
+                    <button class="checkout-button">
+                        Оформити замовлення
+                    </button>
+
+                </form>
+
+
+                <form
+                    action="{% url 'cart:cart_clear' %}"
+                    method="post"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="clear-button"
+                    >
+                        Очистити кошик
+                    </button>
+                </form>
+            </aside>
+
+        </div>
+
+    {% else %}
+
+        <section class="empty-cart">
+            <div class="empty-icon">🛒</div>
+
+            <h2>Кошик поки порожній</h2>
+
+            <p>
+                Додайте книги, які хочете придбати.
+            </p>
+
+            <a href="{% url 'store:home' %}">
+                Перейти до книг
+            </a>
+        </section>
+
+    {% endif %}
+
+</main>
+{% endblock %}
