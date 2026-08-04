@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Реєстрація | Book House</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background:
+            #e3b181;
+            color: #e3b181;
+        }
+
+        .register-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+            border-radius: 24px;
+            background: white;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .register-info {
+            padding: 60px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #f8f4ec;
+        }
+
+        .logo {
+            margin-bottom: 26px;
+            color: #1e3a5f;
+            font-size: 34px;
+            font-weight: 700;
+        }
+
+        .register-info h1 {
+            margin: 0 0 18px;
+            color: #1e3a5f;
+            font-size: 42px;
+            line-height: 1.15;
+        }
+
+        .register-info p {
+            margin: 0 0 24px;
+            color: #666;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .benefits {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .benefits li {
+            margin-bottom: 13px;
+            color: #444;
+        }
+
+        .benefits li::before {
+            content: "✓";
+            margin-right: 10px;
+            color: #d4a017;
+            font-weight: bold;
+        }
+
+        .register-form-section {
+            padding: 48px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .register-form-section h2 {
+            margin: 0 0 8px;
+            color: #1e3a5f;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            margin: 0 0 28px;
+            color: #777;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 11px;
+            outline: none;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #d4a017;
+            box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.14);
+        }
+
+        .field-errors {
+            margin: 7px 0 0;
+            padding: 0;
+            color: #b42318;
+            font-size: 14px;
+            list-style: none;
+        }
+
+        .help-text {
+            display: block;
+            margin-top: 7px;
+            color: #888;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .error-box {
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border-left: 4px solid #b42318;
+            border-radius: 10px;
+            background: #fff1f0;
+            color: #b42318;
+        }
+
+        .register-button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: #1e3a5f;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .register-button:hover {
+            background: #e3b181;
+            transform: translateY(-1px);
+        }
+
+        .bottom-text {
+            margin-top: 22px;
+            text-align: center;
+            color: #777;
+        }
+
+        .bottom-text a {
+            color: #e3b181;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .bottom-text a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 760px) {
+            .register-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .register-info {
+                padding: 36px 28px;
+            }
+
+            .register-info h1 {
+                font-size: 32px;
+            }
+
+            .register-form-section {
+                padding: 38px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="register-wrapper">
+
+    <section class="register-info">
+        <div class="logo">
+            📚 Book Store
+        </div>
+
+        <h1>
+            Створіть свій акаунт
+        </h1>
+
+        <p>
+            Зареєструйтеся, щоб зберігати книги в кошику,
+            редагувати профіль і швидше оформлювати замовлення.
+        </p>
+
+        <ul class="benefits">
+            <li>Особистий профіль</li>
+            <li>Зручне керування кошиком</li>
+            <li>Історія майбутніх замовлень</li>
+        </ul>
+    </section>
+
+    <section class="register-form-section">
+
+        <h2>Реєстрація</h2>
+
+        <p class="subtitle">
+            Заповніть поля нижче
+        </p>
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">
+                    {{ form.username.label }}
+                </label>
+
+                {{ form.username }}
+
+                {% if form.username.errors %}
+                    <ul class="field-errors">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">
+                    {{ form.email.label }}
+                </label>
+
+                {{ form.email }}
+
+                {% if form.email.errors %}
+                    <ul class="field-errors">
+                        {% for error in form.email.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">
+                    Пароль
+                </label>
+
+                {{ form.password1 }}
+
+                {% if form.password1.help_text %}
+                    <span class="help-text">
+                        {{ form.password1.help_text|safe }}
+                    </span>
+                {% endif %}
+
+                {% if form.password1.errors %}
+                    <ul class="field-errors">
+                        {% for error in form.password1.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">
+                    Підтвердження пароля
+                </label>
+
+                {{ form.password2 }}
+
+                {% if form.password2.errors %}
+                    <ul class="field-errors">
+                        {% for error in form.password2.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="register-button">
+                Зареєструватися
+            </button>
+        </form>
+
+        <p class="bottom-text">
+            Уже маєте акаунт?
+
+            <a href="{% url 'login' %}">
+                Увійти
+            </a>
+        </p>
+
+    </section>
+
+</div>
+
+</body>
+</html>
