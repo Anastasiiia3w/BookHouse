@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Вхід | Book House</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background:
+
+                #e3b181;
+            color: #e3b181;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 950px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-info {
+            padding: 60px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #f8f4ec;
+        }
+
+        .logo {
+            margin-bottom: 24px;
+            color: #1e3a5f;
+            font-size: 34px;
+            font-weight: 700;
+        }
+
+        .login-info h1 {
+            margin: 0 0 18px;
+            color: #1e3a5f;
+            font-size: 42px;
+            line-height: 1.15;
+        }
+
+        .login-info p {
+            margin: 0;
+            color: #666;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .login-form-section {
+            padding: 60px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form-section h2 {
+            margin: 0 0 10px;
+            color: #1e3a5f;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            margin-bottom: 30px;
+            color: #777;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 12px;
+            outline: none;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #d4a017;
+            box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.14);
+        }
+
+        .login-button {
+            width: 100%;
+            margin-top: 6px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: #e3b181;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .login-button:hover {
+            background: #152d4a;
+            transform: translateY(-1px);
+        }
+
+        .error-box {
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border-left: 4px solid #b42318;
+            border-radius: 10px;
+            background: #fff1f0;
+            color: #b42318;
+        }
+
+        .bottom-text {
+            margin-top: 22px;
+            text-align: center;
+            color: #777;
+        }
+
+        .bottom-text a {
+            color: #d4a017;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .bottom-text a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 760px) {
+            .login-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .login-info {
+                padding: 36px 28px;
+            }
+
+            .login-info h1 {
+                font-size: 32px;
+            }
+
+            .login-form-section {
+                padding: 38px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <section class="login-info">
+        <div class="logo">📚 Book Store</div>
+
+        <h1>З поверненням!</h1>
+
+        <p>
+            Увійдіть до свого акаунта, щоб переглядати профіль,
+            зберігати улюблені книги та керувати кошиком.
+        </p>
+    </section>
+
+    <section class="login-form-section">
+
+        <h2>Вхід</h2>
+
+        <p class="subtitle">
+            Введіть email та пароль
+        </p>
+
+        {% if form.errors %}
+            <div class="error-box">
+                Неправильний email або пароль. Спробуйте ще раз.
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">
+                    Email
+                </label>
+
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">
+                    Пароль
+                </label>
+
+                {{ form.password }}
+            </div>
+
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <button type="submit" class="login-button">
+                Увійти
+            </button>
+        </form>
+
+        <p class="bottom-text">
+            Ще немає акаунта?
+            <a href="{% url 'users:register' %}">
+                Зареєструватися
+            </a>
+        </p>
+
+    </section>
+
+</div>
+
+</body>
+</html>

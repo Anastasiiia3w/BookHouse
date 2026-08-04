@@ -1,0 +1,19 @@
+{% if recently_viewed_products %}
+    <section class="recently-viewed">
+        <h3>Нещодавно переглянуті</h3>
+
+        {% for product in recently_viewed_products %}
+            <a href="{% url 'review:product_detail_view' product.id %}">
+                {% if product.main_image %}
+                    <img
+                        src="{{ product.main_image.url }}"
+                        alt="{{ product.name }}"
+                        width="55"
+                        height="55"
+                        style="object-fit: cover; border-radius: 8px;"
+                    >
+                {% endif %}
+            </a>
+        {% endfor %}
+    </section>
+{% endif %}

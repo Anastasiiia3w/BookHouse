@@ -1,0 +1,565 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>{{ product.name }}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #302a23;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(193, 154, 102, 0.25),
+                    transparent 32%
+                ),
+                #f6f1e8;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .product-page {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 42px 0 70px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            color: #745d43;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #35291d;
+            transform: translateX(-4px);
+        }
+
+        .product-card {
+            display: grid;
+            grid-template-columns: minmax(320px, 0.9fr) 1.1fr;
+            gap: 55px;
+            padding: 46px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(92, 68, 41, 0.13);
+            border-radius: 30px;
+            box-shadow: 0 24px 70px rgba(69, 49, 28, 0.15);
+        }
+
+        .product-image-section {
+            position: relative;
+        }
+
+        .product-image-box {
+            position: sticky;
+            top: 25px;
+            overflow: hidden;
+            aspect-ratio: 4 / 5;
+            background: #e9dfd1;
+            border-radius: 24px;
+            box-shadow: 0 18px 38px rgba(63, 45, 27, 0.18);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.45s ease;
+        }
+
+        .product-image-box:hover .product-image {
+            transform: scale(1.035);
+        }
+
+        .no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: #917e68;
+            font-size: 72px;
+        }
+
+        .availability {
+            position: absolute;
+            top: 17px;
+            left: 17px;
+            z-index: 2;
+            padding: 9px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .availability-in-stock {
+            color: #22633c;
+            background: #e3f5e9;
+        }
+
+        .availability-out {
+            color: #98392f;
+            background: #ffe8e4;
+        }
+
+        .product-category {
+            display: inline-flex;
+            padding: 8px 13px;
+            margin-bottom: 19px;
+            color: #765630;
+            background: #f2e7d7;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .product-title {
+            margin: 0 0 13px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(36px, 5vw, 58px);
+            line-height: 1.08;
+            color: #30251a;
+        }
+
+        .product-author {
+            margin: 0 0 24px;
+            color: #796b5c;
+            font-size: 18px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 26px;
+            color: #8a6740;
+        }
+
+        .stars {
+            color: #d39b42;
+            letter-spacing: 2px;
+        }
+
+        .product-description {
+            margin: 0 0 28px;
+            color: #665c51;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 13px;
+            margin-bottom: 28px;
+        }
+
+        .detail-item {
+            padding: 15px 17px;
+            background: #faf7f2;
+            border: 1px solid #eee4d8;
+            border-radius: 14px;
+        }
+
+        .detail-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #9a8976;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .detail-value {
+            color: #473b2e;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .purchase-box {
+            padding: 24px;
+            background: linear-gradient(
+                135deg,
+                #f8f0e3,
+                #eee0cd
+            );
+            border: 1px solid #e3d2bb;
+            border-radius: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 21px;
+        }
+
+        .price-label {
+            display: block;
+            margin-bottom: 4px;
+            color: #806f5e;
+            font-size: 13px;
+        }
+
+        .product-price {
+            color: #49331e;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 38px;
+            font-weight: 700;
+        }
+
+        .stock {
+            color: #75624e;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .add-form {
+            display: grid;
+            grid-template-columns: 115px 1fr;
+            gap: 13px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #d8c7b3;
+            border-radius: 13px;
+        }
+
+        .quantity-control input {
+            width: 100%;
+            padding: 15px 8px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .add-button {
+            min-height: 52px;
+            padding: 0 24px;
+            color: #fff;
+            background: linear-gradient(
+                135deg,
+                #876039,
+                #49331f
+            );
+            border: none;
+            border-radius: 13px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(73, 51, 31, 0.25);
+            transition: 0.2s;
+        }
+
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(73, 51, 31, 0.3);
+        }
+
+        .add-button:disabled {
+            color: #81786e;
+            background: #d9d2ca;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        .feature {
+            padding: 16px 12px;
+            text-align: center;
+            color: #655546;
+            background: #fbf8f4;
+            border: 1px solid #ede3d8;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .feature-icon {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 23px;
+        }
+
+        @media (max-width: 880px) {
+            .product-card {
+                grid-template-columns: 1fr;
+                gap: 36px;
+                padding: 30px;
+            }
+
+            .product-image-box {
+                position: static;
+                max-height: 650px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .product-page {
+                width: min(100% - 20px, 1180px);
+                padding-top: 25px;
+            }
+
+            .product-card {
+                padding: 18px;
+                border-radius: 20px;
+            }
+
+            .product-title {
+                font-size: 36px;
+            }
+
+            .product-details,
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .price-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .add-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="product-page">
+
+    <a href="{% url 'store:home' %}" class="back-link">
+        ← Повернутися до каталогу
+    </a>
+
+    <article class="product-card">
+
+        <section class="product-image-section">
+            <div class="product-image-box">
+
+                {% if product.is_available %}
+                    <span class="availability availability-in-stock">
+                        В наявності
+                    </span>
+                {% else %}
+                    <span class="availability availability-out">
+                        Немає в наявності
+                    </span>
+                {% endif %}
+
+                {% if product.main_image %}
+                    <img
+                        src="{{ product.main_image.url }}"
+                        alt="{{ product.name }}"
+                        class="product-image"
+                    >
+                {% else %}
+                    <div class="no-image">
+                        📖
+                    </div>
+                {% endif %}
+
+            </div>
+        </section>
+
+        <section class="product-information">
+
+            {% if product.category %}
+                <span class="product-category">
+                    {{ product.category.name }}
+                </span>
+            {% endif %}
+
+            <h1 class="product-title">
+                {{ product.name }}
+            </h1>
+
+            {% if product.author %}
+                <p class="product-author">
+                    Автор: <strong>{{ product.author }}</strong>
+                </p>
+            {% endif %}
+
+            <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span>Улюблений вибір читачів</span>
+            </div>
+
+            <div class="product-description">
+                {{ product.description|linebreaks }}
+            </div>
+
+            <div class="product-details">
+
+                {% if product.genre %}
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            Жанр
+                        </span>
+
+                        <span class="detail-value">
+                            {{ product.genre }}
+                        </span>
+                    </div>
+                {% endif %}
+
+                {% if product.category %}
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            Категорія
+                        </span>
+
+                        <span class="detail-value">
+                            {{ product.category.name }}
+                        </span>
+                    </div>
+                {% endif %}
+
+                <div class="detail-item">
+                    <span class="detail-label">
+                        Доступність
+                    </span>
+
+                    <span class="detail-value">
+                        {% if product.is_available %}
+                            Є в наявності
+                        {% else %}
+                            Тимчасово відсутня
+                        {% endif %}
+                    </span>
+                </div>
+
+                {% if product.stock != None %}
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            Залишок
+                        </span>
+
+                        <span class="detail-value">
+                            {{ product.stock }} шт.
+                        </span>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="purchase-box">
+
+                <div class="price-row">
+                    <div>
+                        <span class="price-label">
+                            Ціна
+                        </span>
+
+                        <div class="product-price">
+                            {{ product.price }} ₴
+                        </div>
+                    </div>
+
+                    {% if product.stock %}
+                        <span class="stock">
+                            Доступно: {{ product.stock }} шт.
+                        </span>
+                    {% endif %}
+                </div>
+
+                <form
+                    method="post"
+                    action="{% url 'cart:cart_add' product.id %}"
+                    class="add-form"
+                >
+                    {% csrf_token %}
+
+                    <div class="quantity-control">
+                        <input
+                            type="number"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            {% if product.stock %}
+                                max="{{ product.stock }}"
+                            {% endif %}
+                            aria-label="Кількість"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="add-button"
+                        {% if not product.is_available %}
+                            disabled
+                        {% endif %}
+                    >
+                        {% if product.is_available %}
+                            Додати до кошика
+                        {% else %}
+                            Немає в наявності
+                        {% endif %}
+                    </button>
+                </form>
+
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">🚚</span>
+                    Швидка доставка
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">🔒</span>
+                    Безпечна оплата
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">📦</span>
+                    Надійне пакування
+                </div>
+            </div>
+
+        </section>
+    </article>
+</main>
+</body>
+</html>

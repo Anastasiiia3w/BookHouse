@@ -1,0 +1,24 @@
+{% if messages %}
+    <section
+        class="messages"
+        aria-label="Системні повідомлення"
+        aria-live="polite"
+    >
+        {% for message in messages %}
+            <div
+                class="message message--{{ message.tags|default:'info' }}"
+                role="status"
+            >
+                <span>{{ message }}</span>
+
+                <button
+                    class="message__close"
+                    type="button"
+                    aria-label="Закрити повідомлення"
+                >
+                    ×
+                </button>
+            </div>
+        {% endfor %}
+    </section>
+{% endif %}

@@ -1,0 +1,407 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+    {% block title %}
+        Book House
+    {% endblock %}
+</title>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<style>
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: #f6f4f1;
+        color: #302b27;
+        /* Відступ зверху, щоб контент не перекривався фіксованою шапкою */
+        padding-top: 70px;
+    }
+
+    /* Фіксація шапки при скролі */
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1030; /* Пріоритет відображення поверх інших елементів Bootstrap */
+    }
+
+    .navbar {
+        background: linear-gradient(135deg, #543b32, #765548);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+
+    }
+
+    .navbar-brand {
+        font-size: 1.45rem;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+    }
+
+    .navbar-brand,
+    .navbar .nav-link {
+        color: #fff !important;
+    }
+
+    .navbar .nav-link {
+        position: relative;
+        margin: 0 4px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .navbar .nav-link:hover {
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+    .cart-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .cart-badge {
+        min-width: 22px;
+        height: 22px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: #f4c76b;
+        color: #3b2a23;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .search-wrapper {
+        position: relative;
+        width: min(330px, 100%);
+    }
+
+    .search-wrapper input {
+        padding-right: 42px;
+        border: none;
+        border-radius: 999px;
+    }
+
+    .search-wrapper button {
+        position: absolute;
+        top: 50%;
+        right: 5px;
+        width: 34px;
+        height: 34px;
+        transform: translateY(-50%);
+        border: none;
+        border-radius: 50%;
+        background: #f4c76b;
+        color: #3b2a23;
+    }
+
+    main {
+        flex: 1;
+    }
+
+    .page-container {
+        width: min(1200px, calc(100% - 30px));
+        margin: 32px auto;
+    }
+
+    .messages-container {
+        width: min(1200px, calc(100% - 30px));
+        margin: 20px auto 0;
+    }
+
+    footer {
+        margin-top: auto;
+        background: #30251f;
+        color: #e8ded8;
+    }
+
+    footer a {
+        color: #f4c76b;
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        color: #fff;
+    }
+
+    @media (max-width: 991px) {
+        body {
+            /* Більший відступ для мобільних пристроїв, якщо меню розгортається */
+            padding-top: 76px;
+        }
+
+        .search-wrapper {
+            width: 100%;
+            margin: 12px 0;
+        }
+
+        .navbar .nav-link {
+            margin: 2px 0;
+        }
+    }
+</style>
+
+{% block extra_css %}
+{% endblock %}
+
+
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+
+
+        <a class="navbar-brand" href="{% url 'store:home' %}">
+            <i class="fa-solid fa-book-open me-2"></i>
+            Book House
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar"
+            aria-expanded="false"
+            aria-label="Відкрити меню"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a
+                        class="nav-link"
+                        href="{% url 'store:home' %}"
+                    >
+                        <i class="fa-solid fa-house me-1"></i>
+                        Головна
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a
+                        class="nav-link cart-link"
+                        href="{% url 'cart:detail' %}"
+                    >
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        Кошик
+
+                        {% if cart %}
+                            <span class="cart-badge">
+                                {{ cart|length }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </li>
+
+            </ul>
+
+            <form
+                class="search-wrapper me-lg-3"
+                method="get"
+                action="{% url 'store:search' %}"
+            >
+                <input
+                    class="form-control"
+                    type="search"
+                    name="search"
+                    value="{{ request.GET.search }}"
+                    placeholder="Пошук книг..."
+                    aria-label="Пошук книг"
+                >
+
+                <button type="submit" aria-label="Знайти">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+
+            <ul class="navbar-nav">
+
+
+
+                {% if request.user.is_authenticated %}
+
+                <li class="nav-item">
+    <form
+        method="post"
+        action="{% url 'users:logout' %}"
+        class="d-inline"
+    >
+        {% csrf_token %}
+
+        <button
+            type="submit"
+            class="nav-link border-0 bg-transparent"
+        >
+            <i class="fa-solid fa-right-from-bracket me-1"></i>
+            Вийти
+        </button>
+    </form>
+</li>
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="{% url 'users:profile' %}"
+                        >
+                            <i class="fa-regular fa-user me-1"></i>
+
+                            {% if request.user.first_name %}
+                                {{ request.user.first_name }}
+                            {% else %}
+                                Профіль
+                            {% endif %}
+                        </a>
+                    </li>
+
+
+
+                {% else %}
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link"
+                            href="{% url 'users:register' %}"
+                        >
+                            <i class="fa-solid fa-user-plus me-1"></i>
+                            Реєстрація
+                        </a>
+                    </li>
+
+                {% endif %}
+
+                <a href="{% url 'store:random_product' %}" class="btn btn-warning">
+                     Не можете обрати книгу? 🎲
+                </a>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+
+</header>
+
+{% if messages %} <div class="messages-container">
+
+
+    {% for message in messages %}
+        <div
+            class="alert
+                {% if message.tags == 'error' %}
+                    alert-danger
+                {% elif message.tags %}
+                    alert-{{ message.tags }}
+                {% else %}
+                    alert-info
+                {% endif %}
+                alert-dismissible fade show"
+            role="alert"
+        >
+            {{ message }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Закрити"
+            ></button>
+        </div>
+    {% endfor %}
+
+</div>
+
+
+{% endif %}
+
+<main>
+    <div class="page-container">
+
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+
+</main>
+
+<footer class="py-4">
+    <div class="container">
+        <div class="row align-items-center g-3">
+
+
+        <div class="col-md-6 text-center text-md-start">
+            <strong>
+                <i class="fa-solid fa-book me-1"></i>
+                Book House
+            </strong>
+
+            <p class="mb-0 mt-1">
+                Книги, які надихають.
+            </p>
+        </div>
+
+        <div class="col-md-6 text-center text-md-end">
+            <a href="{% url 'store:home' %}">
+                Каталог
+            </a>
+
+            <span class="mx-2">•</span>
+
+            <a href="{% url 'cart:detail' %}">
+                Кошик
+            </a>
+
+
+            <p class="mb-0 mt-2">
+                © {% now "Y" %} Book House
+            </p>
+        </div>
+
+    </div>
+</div>
+
+
+</footer>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+{% block extra_js %}
+{% endblock %}
+
+</body>
+</html>

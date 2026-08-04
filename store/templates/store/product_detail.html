@@ -1,0 +1,902 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+
+{% block title %}
+    {{ product.name }}
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --review-primary: #e6925e;
+        --review-primary-dark: #ba5f2b;
+        --review-accent: #ffb703;
+        --review-bg: #f7f7fb;
+        --review-card: #ffffff;
+        --review-text: #7a430b;
+        --review-muted: #f2be9b;
+        --review-border: #e8e8f0;
+        --review-success: #258750;
+    }
+
+    .product-detail-page {
+        background: var(--review-bg);
+        min-height: 100vh;
+        padding: 45px 15px 70px;
+    }
+
+    .product-container {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+    }
+
+    .product-main-card {
+        display: grid;
+        grid-template-columns: minmax(280px, 430px) 1fr;
+        gap: 48px;
+        padding: 35px;
+        background: var(--review-card);
+        border: 1px solid var(--review-border);
+        border-radius: 28px;
+        box-shadow: 0 18px 55px rgba(39, 35, 67, 0.08);
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        min-height: 480px;
+        border-radius: 22px;
+        background: #eeeeF4;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        min-height: 480px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.4s ease;
+    }
+
+    .product-image-wrapper:hover .product-image {
+        transform: scale(1.035);
+    }
+
+    .product-placeholder {
+        min-height: 480px;
+        display: grid;
+        place-items: center;
+        font-size: 80px;
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--review-primary);
+        font-weight: 700;
+        font-size: 14px;
+        backdrop-filter: blur(10px);
+    }
+
+    .product-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .product-category {
+        margin-bottom: 10px;
+        color: var(--review-primary);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .product-title {
+        margin: 0 0 16px;
+        color: var(--review-text);
+        font-size: clamp(32px, 5vw, 48px);
+        line-height: 1.1;
+    }
+
+    .rating-summary {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    .rating-stars {
+        display: inline-flex;
+        gap: 2px;
+        font-size: 22px;
+    }
+
+    .star {
+        color: #d7d7df;
+    }
+
+    .star.active {
+        color: var(--review-accent);
+    }
+
+    .rating-number {
+        color: var(--review-text);
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .rating-count {
+        color: var(--review-muted);
+        font-size: 14px;
+    }
+
+    .product-description {
+        margin-bottom: 25px;
+        color: var(--review-muted);
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    .product-price {
+        margin-bottom: 18px;
+        color: var(--review-text);
+        font-size: 34px;
+        font-weight: 800;
+    }
+
+    .product-stock {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        margin-bottom: 28px;
+        padding: 8px 13px;
+        border-radius: 10px;
+        background: #ebf8f0;
+        color: var(--review-success);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .product-stock.out-of-stock {
+        background: #fff0f0;
+        color: #bf3434;
+    }
+
+    .add-cart-button {
+
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        width: fit-content;
+        min-width: 210px;
+        padding: 15px 24px;
+        border: none;
+        border-radius: 14px;
+        background: var(--review-primary);
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .add-cart-button:hover {
+        background: var(--review-primary-dark);
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(108, 92, 231, 0.28);
+    }
+
+    .reviews-section {
+        margin-top: 35px;
+        padding: 35px;
+        background: var(--review-card);
+        border: 1px solid var(--review-border);
+        border-radius: 28px;
+        box-shadow: 0 18px 55px rgba(39, 35, 67, 0.06);
+    }
+
+    .reviews-heading-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .reviews-title {
+        margin: 0;
+        color: var(--review-text);
+        font-size: 28px;
+    }
+
+    .review-sort-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .review-sort-form label {
+        color: var(--review-muted);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .review-sort-select,
+    .review-select,
+    .review-textarea {
+        border: 1px solid var(--review-border);
+        border-radius: 12px;
+        background: #fff;
+        color: var(--review-text);
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .review-sort-select {
+        padding: 10px 38px 10px 12px;
+        cursor: pointer;
+    }
+
+    .review-select {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .review-textarea {
+        width: 100%;
+        padding: 14px;
+        resize: vertical;
+    }
+
+    .review-sort-select:focus,
+    .review-select:focus,
+    .review-textarea:focus {
+        border-color: var(--review-primary);
+        box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+    }
+
+    .review-form-card {
+        margin-bottom: 32px;
+        padding: 25px;
+        border-radius: 18px;
+        background: linear-gradient(
+            135deg,
+            rgba(108, 92, 231, 0.09),
+            rgba(255, 183, 3, 0.09)
+        );
+    }
+
+    .review-form-card h3 {
+        margin: 0 0 8px;
+        color: var(--review-text);
+    }
+
+    .review-form-description {
+        margin-bottom: 20px;
+        color: var(--review-muted);
+        font-size: 14px;
+    }
+
+    .review-field {
+        margin-bottom: 18px;
+    }
+
+    .review-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--review-text);
+        font-weight: 700;
+    }
+
+    .review-errors {
+        margin: 7px 0 0;
+        padding: 0;
+        list-style: none;
+        color: #c0392b;
+        font-size: 13px;
+    }
+
+    .review-submit-button {
+        padding: 13px 22px;
+        border: none;
+        border-radius: 12px;
+        background: var(--review-primary);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .review-submit-button:hover {
+        background: var(--review-primary-dark);
+        transform: translateY(-1px);
+    }
+
+    .review-notice {
+        margin-bottom: 28px;
+        padding: 18px 20px;
+        border: 1px solid #e4e0ff;
+        border-radius: 15px;
+        background: #f6f4ff;
+        color: #514a7c;
+        line-height: 1.6;
+    }
+
+    .review-list {
+        display: grid;
+        gap: 18px;
+    }
+
+    .review-card {
+        padding: 23px;
+        border: 1px solid var(--review-border);
+        border-radius: 18px;
+        background: #fff;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .review-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(39, 35, 67, 0.08);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 14px;
+    }
+
+    .review-user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .review-avatar {
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: linear-gradient(
+            135deg,
+            var(--review-primary),
+            #9b8cff
+        );
+        color: #fff;
+        font-size: 18px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .review-user-name {
+        margin: 0 0 4px;
+        color: var(--review-text);
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .review-date {
+        color: var(--review-muted);
+        font-size: 13px;
+    }
+
+    .verified-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 5px;
+        color: var(--review-success);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .review-rating {
+        white-space: nowrap;
+        color: var(--review-accent);
+        font-size: 17px;
+    }
+
+    .review-text {
+        margin: 0;
+        color: #555568;
+        line-height: 1.75;
+        white-space: pre-line;
+    }
+
+    .review-footer {
+        margin-top: 17px;
+        padding-top: 14px;
+        border-top: 1px solid var(--review-border);
+        color: var(--review-muted);
+        font-size: 13px;
+    }
+
+    .empty-reviews {
+        padding: 45px 20px;
+        border: 2px dashed var(--review-border);
+        border-radius: 18px;
+        text-align: center;
+        color: var(--review-muted);
+    }
+
+    .empty-reviews-icon {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 48px;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 30px;
+    }
+
+    .pagination-link,
+    .pagination-current {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+        height: 42px;
+        padding: 0 13px;
+        border-radius: 11px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .pagination-link {
+        border: 1px solid var(--review-border);
+        background: #fff;
+        color: var(--review-text);
+        transition: 0.2s;
+    }
+
+    .pagination-link:hover {
+        border-color: var(--review-primary);
+        color: var(--review-primary);
+    }
+
+    .pagination-current {
+        background: var(--review-primary);
+        color: #fff;
+    }
+
+    @media (max-width: 850px) {
+        .product-main-card {
+            grid-template-columns: 1fr;
+            gap: 28px;
+            padding: 22px;
+        }
+
+        .product-image-wrapper,
+        .product-image,
+        .product-placeholder {
+            min-height: 380px;
+        }
+
+        .reviews-section {
+            padding: 24px 18px;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .product-detail-page {
+            padding: 20px 8px 45px;
+        }
+
+        .product-main-card,
+        .reviews-section {
+            border-radius: 20px;
+        }
+
+        .product-image-wrapper,
+        .product-image,
+        .product-placeholder {
+            min-height: 320px;
+        }
+
+        .review-header {
+            flex-direction: column;
+        }
+
+        .reviews-heading-row {
+            align-items: stretch;
+        }
+
+        .review-sort-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .add-cart-button {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<section class="product-detail-page">
+    <div class="product-container">
+        <article class="product-main-card">
+            <div class="product-image-wrapper">
+                {% if product.main_image %}
+                    <img
+                        src="{{ product.main_image.url }}"
+                        alt="{{ product.name }}"
+                        class="product-image"
+                    >
+                {% else %}
+                    <div class="product-placeholder">
+                        📚
+                    </div>
+                {% endif %}
+
+                {% if product.featured %}
+                    <span class="product-badge">
+                        Популярне
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                {% if product.category %}
+                    <div class="product-category">
+                        {{ product.category.name }}
+                    </div>
+                {% endif %}
+
+                <h1 class="product-title">
+                    {{ product.name }}
+                </h1>
+
+                <div class="rating-summary">
+                    <div
+                        class="rating-stars"
+                        aria-label="Рейтинг {{ average_rating|floatformat:1 }} з 5"
+                    >
+                        {% for number in rating_range %}
+                            <span class="star {% if number <= average_rating_rounded %}active{% endif %}">
+                                ★
+                            </span>
+                        {% endfor %}
+                    </div>
+
+                    <span class="rating-number">
+                        {{ average_rating|floatformat:1 }}
+                    </span>
+
+                    <span class="rating-count">
+                        {{ reviews_count }}
+                        {% if reviews_count == 1 %}
+                            відгук
+                        {% else %}
+                            відгуків
+                        {% endif %}
+                    </span>
+                </div>
+
+                {% if product.author %}
+                    <p>
+                        <strong>Автор:</strong> {{ product.author }}
+                    </p>
+                {% endif %}
+
+                <div class="product-description">
+                    {{ product.description|linebreaks }}
+                </div>
+
+                <div class="product-price">
+                    {{ product.price }} грн
+                </div>
+
+                {% if product.stock > 0 %}
+                    <div class="product-stock">
+                        ✓ У наявності: {{ product.stock }}
+                    </div>
+
+
+                    <form
+                        action="{% url 'cart:cart_add' product.id %}"
+                         method="post"
+                         class="add-to-cart-form"
+                    >
+                        {% csrf_token %}
+
+                        {{ cart_product_form.quantity }}
+
+                        <button type="submit" class="add-cart-button">
+                           Додати до кошика 🛒
+                        </button>
+                    </form>
+
+                {% else %}
+                    <div class="product-stock out-of-stock">
+                        Немає в наявності
+                    </div>
+                {% endif %}
+            </div>
+        </article>
+
+        <section class="reviews-section" id="reviews">
+            <div class="reviews-heading-row">
+                <h2 class="reviews-title">
+                    Відгуки покупців
+                </h2>
+
+                <form
+                    method="get"
+                    class="review-sort-form"
+                >
+                    <label for="review-sort">
+                        Сортувати:
+                    </label>
+
+                    <select
+                        id="review-sort"
+                        name="sort"
+                        class="review-sort-select"
+                        onchange="this.form.submit()"
+                    >
+                        <option
+                            value="newest"
+                            {% if sort_by == 'newest' %}selected{% endif %}
+                        >
+                            Спочатку нові
+                        </option>
+
+                        <option
+                            value="oldest"
+                            {% if sort_by == 'oldest' %}selected{% endif %}
+                        >
+                            Спочатку старі
+                        </option>
+
+                        <option
+                            value="helpful"
+                            {% if sort_by == 'helpful' %}selected{% endif %}
+                        >
+                            Найкорисніші
+                        </option>
+
+                        <option
+                            value="highest"
+                            {% if sort_by == 'highest' %}selected{% endif %}
+                        >
+                            Найвища оцінка
+                        </option>
+
+                        <option
+                            value="lowest"
+                            {% if sort_by == 'lowest' %}selected{% endif %}
+                        >
+                            Найнижча оцінка
+                        </option>
+                    </select>
+                </form>
+            </div>
+
+            {% if can_review %}
+                <div class="review-form-card">
+                    <h3>Залишити відгук</h3>
+
+                    <p class="review-form-description">
+                        Ваш відгук з’явиться після перевірки модератором.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <ul class="review-errors">
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        <div class="review-field">
+                            <label for="{{ form.rating.id_for_label }}">
+                                {{ form.rating.label }}
+                            </label>
+
+                            {{ form.rating }}
+
+                            {% if form.rating.errors %}
+                                <ul class="review-errors">
+                                    {% for error in form.rating.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="review-field">
+                            <label for="{{ form.text.id_for_label }}">
+                                {{ form.text.label }}
+                            </label>
+
+                            {{ form.text }}
+
+                            {% if form.text.errors %}
+                                <ul class="review-errors">
+                                    {% for error in form.text.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="review-submit-button"
+                        >
+                            Надіслати відгук
+                        </button>
+                    </form>
+                </div>
+
+            {% elif already_reviewed %}
+                <div class="review-notice">
+                    ✓ Ви вже залишили відгук на цей товар.
+                </div>
+
+            {% elif not user.is_authenticated %}
+                <div class="review-notice">
+                    Щоб залишити відгук, спочатку
+                    <a href="{% url 'login' %}?next={{ request.path }}">
+                        увійдіть у свій акаунт
+                    </a>.
+                </div>
+
+            {% else %}
+                <div class="review-notice">
+                    Відгук можуть залишити лише користувачі, які придбали
+                    й отримали цей товар.
+                </div>
+            {% endif %}
+
+            <div class="review-list">
+                {% for review in reviews %}
+                    <article class="review-card">
+                        <div class="review-header">
+                            <div class="review-user-info">
+                                <div class="review-avatar">
+                                    {{ review.user.username|first|default:"К" }}
+                                </div>
+
+                                <div>
+                                    <p class="review-user-name">
+                                        {{ review.user.username|default:review.user.email }}
+                                    </p>
+
+                                    <span class="review-date">
+                                        {{ review.created_at|date:"d.m.Y о H:i" }}
+                                    </span>
+
+                                    {% if review.is_verified_purchase %}
+                                        <div class="verified-badge">
+                                            ✓ Підтверджена покупка
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div
+                                class="review-rating"
+                                aria-label="{{ review.rating }} з 5"
+                            >
+                                {% for number in rating_range %}
+                                    {% if number <= review.rating %}
+                                        ★
+                                    {% else %}
+                                        <span class="star">★</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <p class="review-text">
+                            {{ review.text }}
+                        </p>
+
+                        <div class="review-footer">
+                            👍 Корисно: {{ review.helpful }}
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="empty-reviews">
+                        <span class="empty-reviews-icon">💬</span>
+                        Поки що немає відгуків.
+                        Будьте першими, хто поділиться враженнями.
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if reviews.paginator.num_pages > 1 %}
+                <nav
+                    class="pagination"
+                    aria-label="Пагінація відгуків"
+                >
+                    {% if reviews.has_previous %}
+                        <a
+                            class="pagination-link"
+                            href="?sort={{ sort_by }}&page=1#reviews"
+                        >
+                            «
+                        </a>
+
+                        <a
+                            class="pagination-link"
+                            href="?sort={{ sort_by }}&page={{ reviews.previous_page_number }}#reviews"
+                        >
+                            Назад
+                        </a>
+                    {% endif %}
+
+                    {% for page_num in reviews.paginator.page_range %}
+                        {% if page_num == reviews.number %}
+                            <span class="pagination-current">
+                                {{ page_num }}
+                            </span>
+
+                        {% elif page_num >= reviews.number|add:"-2" and page_num <= reviews.number|add:"2" %}
+                            <a
+                                class="pagination-link"
+                                href="?sort={{ sort_by }}&page={{ page_num }}#reviews"
+                            >
+                                {{ page_num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if reviews.has_next %}
+                        <a
+                            class="pagination-link"
+                            href="?sort={{ sort_by }}&page={{ reviews.next_page_number }}#reviews"
+                        >
+                            Далі
+                        </a>
+
+                        <a
+                            class="pagination-link"
+                            href="?sort={{ sort_by }}&page={{ reviews.paginator.num_pages }}#reviews"
+                        >
+                            »
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        </section>
+
+
+</section><br><br>
+
+            <div class="col-lg-3">
+                {% include 'sidebar.html' %}
+            </div>
+
+
+{% endblock %}

@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Пошук книг
+{% endblock %}
+
+{% block content %}
+<style>
+    .search-page {
+        min-height: 80vh;
+        padding: 45px 0;
+        background:
+            radial-gradient(circle at top left, rgba(144, 108, 75, 0.12), transparent 35%),
+            #f8f5f0;
+    }
+
+    .search-header {
+        margin-bottom: 30px;
+    }
+
+    .search-header h1 {
+        margin-bottom: 8px;
+        color: #2f2924;
+        font-size: 36px;
+        font-weight: 700;
+    }
+
+    .search-header p {
+        margin: 0;
+        color: #766c63;
+        font-size: 16px;
+    }
+
+    .filter-card {
+        padding: 24px;
+        margin-bottom: 30px;
+        background: #ffffff;
+        border: 1px solid rgba(92, 72, 53, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 12px 35px rgba(63, 48, 36, 0.08);
+    }
+
+    .filter-card label {
+        display: block;
+        margin-bottom: 7px;
+        color: #4a4038;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .filter-card .form-control,
+    .filter-card .form-select {
+        min-height: 48px;
+        border: 1px solid #ddd3ca;
+        border-radius: 12px;
+        box-shadow: none;
+    }
+
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color: #8e6d52;
+        box-shadow: 0 0 0 3px rgba(142, 109, 82, 0.12);
+    }
+
+    .search-button {
+        width: 100%;
+        min-height: 48px;
+        border: none;
+        border-radius: 12px;
+        background: #49392f;
+        color: #ffffff;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .search-button:hover {
+        background: #33271f;
+        transform: translateY(-1px);
+    }
+
+    .clear-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid #d8cec5;
+        border-radius: 12px;
+        color: #5e5148;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .clear-button:hover {
+        background: #f3eee9;
+        color: #33271f;
+    }
+
+    .results-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .results-info h2 {
+        margin: 0;
+        color: #332b25;
+        font-size: 23px;
+        font-weight: 700;
+    }
+
+    .results-count {
+        padding: 7px 13px;
+        background: #e9dfd5;
+        border-radius: 20px;
+        color: #5c493b;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .product-card {
+        height: 100%;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid rgba(90, 69, 51, 0.1);
+        border-radius: 18px;
+        box-shadow: 0 10px 28px rgba(57, 43, 32, 0.07);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 35px rgba(57, 43, 32, 0.13);
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        height: 270px;
+        overflow: hidden;
+        background: #eee7df;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.04);
+    }
+
+    .product-category {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 6px 11px;
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 20px;
+        color: #564438;
+        font-size: 12px;
+        font-weight: 600;
+        backdrop-filter: blur(5px);
+    }
+
+    .product-body {
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 270px);
+        padding: 20px;
+    }
+
+    .product-title {
+        margin-bottom: 8px;
+        color: #302821;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .product-author {
+        margin-bottom: 10px;
+        color: #8a796c;
+        font-size: 14px;
+    }
+
+    .product-description {
+        display: -webkit-box;
+        overflow: hidden;
+        margin-bottom: 16px;
+        color: #6f645c;
+        font-size: 14px;
+        line-height: 1.6;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+
+    .product-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: auto;
+    }
+
+    .product-price {
+        color: #49372a;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .details-button {
+        padding: 10px 16px;
+        border-radius: 10px;
+        background: #826044;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .details-button:hover {
+        background: #654932;
+        color: #ffffff;
+    }
+
+    .empty-results {
+        padding: 55px 25px;
+        background: #ffffff;
+        border: 1px dashed #d4c8bd;
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    .empty-results-icon {
+        margin-bottom: 15px;
+        font-size: 48px;
+    }
+
+    .empty-results h3 {
+        margin-bottom: 10px;
+        color: #3c332c;
+        font-size: 24px;
+    }
+
+    .empty-results p {
+        margin-bottom: 20px;
+        color: #7b6f65;
+    }
+
+    @media (max-width: 767px) {
+        .search-page {
+            padding: 25px 0;
+        }
+
+        .search-header h1 {
+            font-size: 29px;
+        }
+
+        .product-image-wrapper {
+            height: 320px;
+        }
+
+        .results-info {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<section class="search-page">
+    <div class="container">
+        <div class="search-header">
+            <h1>Знайди свою наступну книгу</h1>
+            <p>
+                Шукай книги за назвою, описом, автором або категорією.
+            </p>
+        </div>
+<form method="get" class="filter-card">
+                        <div class="col-lg-3 col-md-6">
+                    <label for="{{ form.sort_by.id_for_label }}">
+                        {{ form.sort_by.label }}
+                    </label>
+
+                    {{ form.sort_by }}
+                </div>
+</form>
+
+
+
+
+        <div class="results-info">
+            <h2>Результати пошуку</h2>
+
+            <span class="results-count">
+                Знайдено: {{ products|length }}
+            </span>
+        </div>
+
+        {% if products %}
+            <div class="row g-4">
+{% for product in products %}
+    <div class="col-xl-3 col-lg-4 col-md-6">
+        <article class="product-card">
+
+            <div class="product-image-wrapper">
+                {% if product.main_image %}
+                    <img
+                        src="{{ product.main_image.url }}"
+                        alt="{{ product.name }}"
+                        class="product-image"
+                    >
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <span class="text-muted">
+                            Немає зображення
+                        </span>
+                    </div>
+                {% endif %}
+
+                {% if product.category %}
+                    <span class="product-category">
+                        {{ product.category.name }}
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="product-body">
+                <h3 class="product-title">
+                    {{ product.name }}
+                </h3>
+
+                {% if product.author %}
+                    <p class="product-author">
+                        Автор: {{ product.author }}
+                    </p>
+                {% endif %}
+
+                <p class="product-description">
+                    {{ product.description|truncatewords:25 }}
+                </p>
+
+                <div class="product-bottom">
+                    <span class="product-price">
+                        {{ product.price }} грн
+                    </span>
+
+                    <a
+                        href="{% url 'store:product_detail' product.id %}"
+                        class="details-button"
+                    >
+                        Детальніше
+                    </a>
+                </div>
+            </div>
+
+        </article>
+    </div>
+{% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-results">
+                <div class="empty-results-icon">📚</div>
+
+                <h3>Нічого не знайдено</h3>
+
+                <p>
+                    Спробуй змінити пошуковий запит або обрати іншу категорію.
+                </p>
+
+                <a href="{% url 'store:search' %}" class="details-button">
+                    Показати всі книги
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
